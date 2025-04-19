@@ -18,6 +18,13 @@ pipeline {
                 }
             }
         }
+        //  stage('Install Dependencies') {
+        //     steps {
+        //         dir('backend') {
+        //             sh 'npm install'
+        //         }
+        //     }
+        // }
         // stage('Run unit tests') {
         //     steps {
         //         dir('backend') {
