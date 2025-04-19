@@ -57,6 +57,30 @@ const registerTenant = async (req, res) => {
         .json("You already registered. Please login to proceed.");
     }
 
+    //Check if apartment exists in listing
+    const listingCheckQuery =
+      "SELECT * FROM apartment_listings WHERE apartmentNumber = $1";
+    const listingResult = await client.query(listingCheckQuery, [
+      apartmentNumber,
+    ]);
+
+    if (listingResult.rows.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "The selected apartment does not exist." });
+    }
+
+    //Check if apartment is already occupied
+    const occupancyCheckQuery =
+      "SELECT * FROM tenants WHERE apartmentNumber = $1";
+    const occupied = await client.query(occupancyCheckQuery, [apartmentNumber]);
+
+    if (occupied.rows.length > 0) {
+      return res
+        .status(400)
+        .json({ message: "This apartment is already occupied." });
+    }
+
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 

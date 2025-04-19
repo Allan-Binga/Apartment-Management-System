@@ -26,7 +26,7 @@ const authLandlord = (req, res, next) => {
   try {
     const token = req.cookies.landlordSession;
     if (!token) {
-      return res.status(401).json({ message: "Unauthorized landlord." });
+      return res.status(401).json({ message: "Unauthorized, please login as landlord." });
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
