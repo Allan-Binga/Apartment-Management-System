@@ -1,2 +1,2 @@
 //Backend Endpoint
-export const endpoint = process.env.BACKEND_ENDPOINT
+export const endpoint = import.meta.env.VITE_BACKEND_ENDPOINT

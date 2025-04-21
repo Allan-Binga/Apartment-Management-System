@@ -30,6 +30,27 @@ const registerTenant = async (req, res) => {
     });
   }
 
+  //At least 2 months lease minimum implemented. leaseEndDate > leaseStartDate
+  const start = new Date(leaseStartDate);
+  const end = new Date(leaseEndDate);
+
+  if (end <= start) {
+    return res.status(400).json({
+      message: "Lease end date must be after the lease start date.",
+    });
+  }
+
+  // Calculate difference in months
+  const difference =
+    (end.getFullYear() - start.getFullYear()) * 12 +
+    (end.getMonth() - start.getMonth());
+
+  if (difference < 2) {
+    return res.status(400).json({
+      message: "Lease must be at least 2 months long.",
+    });
+  }
+
   // VALIDATE EMAIL FORMAT
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
@@ -116,6 +137,10 @@ const registerTenant = async (req, res) => {
 // Tenant Login
 const loginTenant = async (req, res) => {
   const { email, password } = req.body;
+
+  if (req.cookies && req.cookies.tenantSession) {
+    return res.status(400).json({ message: "You are already logged in." });
+  }
   try {
     // Check if tenant exists by email
     const checkTenantQuery = "SELECT * FROM tenants WHERE email = $1";

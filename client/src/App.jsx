@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
-import Home from "./pages/Home";
+import Home from "./pages/Tenant/Home";
 import TenantRegister from "./pages/Tenant/Register";
 import TenantLogin from "./pages/Tenant/Login";
 import LandlordRegister from "./pages/Landlord/Register";
