@@ -170,9 +170,12 @@ const loginTenant = async (req, res) => {
 
     // Create JWT tenant token
     const tenantToken = jwt.sign(
-      { tenant: tenant.rows[0].id },
+      {
+        tenant: tenant.rows[0].id,
+        firstName: tenant.rows[0].firstname,
+      },
       process.env.JWT_SECRET,
-      { expiresIn: "24h" } // Token expires in 24 hours
+      { expiresIn: "24h" }
     );
 
     // Set JWT token in the cookie
@@ -296,7 +299,8 @@ const loginLandlord = async (req, res) => {
 
     //Create JWT landlord token
     const landlordToken = jwt.sign(
-      { landlord: landlord.rows[0].id },
+      { landlord: landlord.rows[0].id, firstName: landlord.rows[0].firstname },
+
       process.env.JWT_SECRET,
       { expiresIn: "24h" }
     );

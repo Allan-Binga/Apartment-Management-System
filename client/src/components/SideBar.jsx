@@ -1,7 +1,27 @@
+import { useEffect, useState } from "react";
+import axios from "axios";
 import Logo from "../../src/assets/logo.png";
-import { Home, CreditCard, Wrench, User, LogOut, Moon } from "lucide-react";
+import { CreditCard, Wrench, User, LogOut } from "lucide-react";
+import { endpoint } from "../apiEndpoint";
 
 function SideBar() {
+  const [firstName, setFirstName] = useState("");
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await axios.get(`${endpoint}/users/tenant/me`, {
+          withCredentials: true
+        });
+        setFirstName(response.data.firstName);
+      } catch (error) {
+        console.error("Failed to fetch user:", error);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
   return (
     <aside className="fixed left-0 top-0 h-full w-72 bg-white p-4 rounded-tr-2xl rounded-br-2xl shadow-md flex flex-col justify-between">
       <div>
@@ -15,7 +35,9 @@ function SideBar() {
           <div className="w-12 h-12 bg-blue-600 text-white flex items-center justify-center rounded-xl text-xl">
             <User />
           </div>
-          <p className="font-medium text-gray-700 text-lg">Hello John</p>
+          <p className="font-medium text-gray-700 text-lg">
+            Hello {firstName || "Guest"}
+          </p>
         </div>
 
         {/* Navigation */}
