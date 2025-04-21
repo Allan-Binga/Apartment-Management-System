@@ -69,7 +69,7 @@ function Home() {
                         : "bg-gray-100 text-gray-600"
                     }`}
                   >
-                    {apt.leased ? "Leased" : "Available"}
+                    {apt.leasingstatus ? "Leased" : "Available"}
                   </span>
                 </div>
               </div>

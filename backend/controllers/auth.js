@@ -124,6 +124,14 @@ const registerTenant = async (req, res) => {
       hashedPassword,
     ]);
 
+    // Update apartment leasingstatus to Leased
+    const updateApartmentQuery =
+      "UPDATE apartment_listings SET leasingstatus = 'Leased' WHERE apartmentnumber = $1";
+    await client.query(updateApartmentQuery, [apartmentNumber]);
+
+    // Commit the transaction
+    await client.query("COMMIT");
+
     res.status(201).json({
       message: "You have registered successfully.",
       tenant: newTenant.rows[0],
