@@ -9,6 +9,7 @@ const paymentRoute = require("./routes/payments");
 const maintenanceRequestRoute = require("./routes/maintenanceRequest")
 const checkoutRoute = require("./routes/rentCheckout")
 const webhookRoute = require("./routes/webhook")
+const emailRoute = require("./routes/emailService")
 
 require("./config/db");
 
@@ -28,6 +29,7 @@ app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 
 // Routes
 app.use("/murandi/v1/auth", authRoute);
+app.use("/murandi/v1/verify", emailRoute)
 app.use("/murandi/v1/users", usersRoute);
 app.use("/murandi/v1/listings", listingsRoute);
 app.use("/murandi/v1/payments", paymentRoute);

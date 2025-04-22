@@ -15,12 +15,12 @@ const transporter = nodemailer.createTransport({
 
 //Send Verification Email
 const sendVerificationEmail = async (email, token) => {
-  const verificationUrl = ``;
+  const verificationUrl = `${process.env.CLIENT_URL}/account-verification?token=${token}`;
 
   const mailOptions = {
-    from: `"FastStore API" <${process.env.MAIL_USER}>`, //Name and Email
+    from: `"Murandi Apartments" <${process.env.MAIL_USER}>`, //Name and Email
     to: email,
-    subject: "Account verification.",
+    subject: "Please verify your account.",
     html: `  <div style="font-family: Arial, sans-serif; text-align: center; padding: 20px; background-color: #f4f4f4;">
         <div style="max-width: 600px; margin: auto; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
           <h2 style="color: #333;">Verify Your Account</h2>
@@ -34,9 +34,55 @@ const sendVerificationEmail = async (email, token) => {
       </div>`,
   };
   try {
-    await transporter.sendMail(mailOptions)
-    console.log(`Verification email sent to ${email}`)
+    await transporter.sendMail(mailOptions);
+    console.log(`Verification email sent to ${email}`);
+  } catch (error) {}
+};
+
+//Verify token sent in verification email
+const verifyVerificationToken = async (req, res) => {
+  try {
+    const { token } = req.query;
+
+    if (!token) {
+      return res.status(400).json({ message: "No token provided" });
+    }
+
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+    const findTenantQuery = `
+      SELECT * FROM tenants WHERE verificationtoken = $1
+    `;
+
+    const result = await client.query(findTenantQuery, [hashedToken]);
+
+    if (result.rows.length === 0) {
+      return res.status(400).json({ message: "Invalid or expired token" });
+    }
+
+    const tenant = result.rows[0];
+
+    if (new Date(tenant.verificationtokenexpiry) < new Date()) {
+      return res.status(400).json({
+        message: "Token expired. Please request a new verification email.",
+        email: tenant.email,
+      });
+    }
+
+    const updateTenantQuery = `
+      UPDATE tenants
+      SET isverified = true
+      WHERE id = $1
+    `;
+    await client.query(updateTenantQuery, [tenant.id]);
+
+    // await sendAccountConfirmationEmail(tenant.email);
+
+    await user.save();
+    res.json({ message: "Account verified successfully." });
   } catch (error) {
-    
+    res.status(500).json({ message: "Internal server error" });
   }
 };
+
+module.exports = { sendVerificationEmail, verifyVerificationToken };

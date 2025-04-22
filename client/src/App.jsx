@@ -7,6 +7,7 @@ import LandlordRegister from "./pages/Landlord/Register";
 import LandlordLogin from "./pages/Landlord/Login";
 import AdminRegister from "./pages/Admin/Register";
 import AdminLogin from "./pages/Admin/Login";
+import Verify from "./pages/accountVerification/Verify";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <Route path="/login/landlord" element={<LandlordLogin />} />
         <Route path="/signup/admin" element={<AdminRegister />} />
         <Route path="/login/admin" element={<AdminLogin />} />
+        <Route path="/account-verification" element={<Verify/>}/>
       </Routes>
     </Router>
   );

@@ -1,6 +1,8 @@
 const client = require("../config/db.js");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
+const {sendVerificationEmail} = require("./emailService.js")
 
 //Tenant Registration
 const registerTenant = async (req, res) => {
@@ -105,12 +107,31 @@ const registerTenant = async (req, res) => {
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Insert the new tenant into the database
+    //Generate and hash auth token
+    const plainToken = crypto.randomBytes(32).toString("hex");
+    const hashedToken = crypto
+      .createHash("sha256")
+      .update(plainToken)
+      .digest("hex");
+    const verificationTokenExpiry = new Date(Date.now() + 2 * 60 * 1000); // 2 minutes from now
+
+    /// Insert tenant including token
     const insertTenantQuery = `
-      INSERT INTO tenants (firstName, lastName, email, phoneNumber, apartmentNumber, leaseStartDate, leaseEndDate, password)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-      RETURNING id, firstName, lastName, email, phoneNumber, apartmentNumber, leaseStartDate, leaseEndDate
-    `;
+    INSERT INTO tenants (
+      firstName,
+      lastName,
+      email,
+      phoneNumber,
+      apartmentNumber,
+      leaseStartDate,
+      leaseEndDate,
+      password,
+      verificationToken,
+      verificationTokenExpiry,
+      isVerified
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+    RETURNING id, firstName, lastName, email, phoneNumber, apartmentNumber, leaseStartDate, leaseEndDate
+  `;
 
     //Save Tenant to PostgreSQL
     const newTenant = await client.query(insertTenantQuery, [
@@ -122,12 +143,18 @@ const registerTenant = async (req, res) => {
       leaseStartDate,
       leaseEndDate,
       hashedPassword,
+      hashedToken,
+      verificationTokenExpiry,
+      false, // isVerified
     ]);
 
     // Update apartment leasingstatus to Leased
     const updateApartmentQuery =
       "UPDATE apartment_listings SET leasingstatus = 'Leased' WHERE apartmentnumber = $1";
     await client.query(updateApartmentQuery, [apartmentNumber]);
+
+    // Send email with plainToken
+    await sendVerificationEmail(email, plainToken);
 
     // Commit the transaction
     await client.query("COMMIT");
