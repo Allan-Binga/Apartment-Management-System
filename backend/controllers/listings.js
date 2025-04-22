@@ -10,6 +10,36 @@ const getListings = async (req, res) => {
   }
 };
 
+//Fetch user's leased apartment
+const getUserLeasedApartment = async (req, res) => {
+  try {
+    const tenantId = req.tenantId;
+
+    const query = `
+      SELECT a.*
+      FROM apartment_listings a
+      JOIN tenants t ON a.apartmentNumber = t.apartmentNumber
+      WHERE t.id = $1
+    `;
+
+    const result = await client.query(query, [tenantId]);
+
+    if (result.rows.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No leased apartment found for this tenant." });
+    }
+
+    res
+      .status(200)
+      .json({ message: "Leased apartment:", apartment: result.rows[0] });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Internal serer error retrieveing apartment" });
+  }
+};
+
 // Create Apartment Listings
 const createListing = async (req, res) => {
   try {
@@ -137,4 +167,10 @@ const deleteListing = async (req, res) => {
   }
 };
 
-module.exports = { getListings, createListing, updateListing, deleteListing };
+module.exports = {
+  getListings,
+  getUserLeasedApartment,
+  createListing,
+  updateListing,
+  deleteListing,
+};
