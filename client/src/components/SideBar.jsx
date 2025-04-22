@@ -48,7 +48,7 @@ function SideBar() {
               className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-blue-100 transition-colors"
             >
               <CreditCard className="w-6 h-6" />
-              <span>Payments</span>
+              <span>Rent Payments</span>
             </a>
           </li>
           <li>

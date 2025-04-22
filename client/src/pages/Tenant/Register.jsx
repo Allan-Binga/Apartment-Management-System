@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import signupImage from "../../assets/signup.jpg";
 import { Eye, EyeOff } from "lucide-react";
@@ -43,6 +43,7 @@ function TenantRegister() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -95,7 +96,7 @@ function TenantRegister() {
               }
 
               setSuccess(data.message);
-              // Optionally redirect or reset form
+              navigate("/login/tenant");
             } catch (err) {
               setError(err.message);
             } finally {

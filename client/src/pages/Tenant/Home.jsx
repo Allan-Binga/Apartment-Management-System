@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import Header from "../../components/Header";
+import Navbar from "../../components/Navbar"
 import SideBar from "../../components/SideBar";
 import Footer from "../../components/Footer";
 import { endpoint } from "../../apiEndpoint";
@@ -29,7 +29,7 @@ function Home() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Header stays in its own flex row */}
-      <Header className="z-10" />
+      <Navbar className="z-10" />
 
       {/* Main content area with sidebar */}
       <div className="flex flex-1">

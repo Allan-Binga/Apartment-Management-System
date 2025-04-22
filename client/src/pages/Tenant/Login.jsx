@@ -22,7 +22,7 @@ function TenantLogin() {
     setLoading(true);
 
     try {
-      const res = await fetch(`${endpoint}/auth/login/tenant`, {
+      const response = await fetch(`${endpoint}/auth/login/tenant`, {
         method: "POST",
         credentials: "include",
         headers: {
@@ -31,9 +31,9 @@ function TenantLogin() {
         body: JSON.stringify(formData),
       });
 
-      const data = await res.json();
+      const data = await response.json();
 
-      if (!res.ok) {
+      if (!response.ok) {
         throw new Error(data.message || "Login failed");
       }
       navigate("/");
