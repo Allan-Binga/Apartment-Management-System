@@ -33,18 +33,20 @@ pipeline {
         //     }
         // }
     }
-    // post {
-    //     success {
-    //         slackSend(
-    //             color: 'good',
-    //             message: 'Unit tests passed!'
-    //         )
-    //     }
-    //     failure {
-    //         slackSend(
-    //             color: 'danger',
-    //             message: 'Unit tests failed.'
-    //         )
-    //     }
-    // }
+    post {
+        success {
+            slackSend(
+                channel: '#murandi-apartments',
+                color: 'good',
+                message: 'Unit tests passed!'
+            )
+        }
+        failure {
+            slackSend(
+                channel: "#murandi-apartments",
+                color: 'danger',
+                message: 'Unit tests failed.'
+            )
+        }
+    }
 }
