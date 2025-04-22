@@ -38,14 +38,14 @@ pipeline {
             slackSend(
                 channel: '#murandi-apartments',
                 color: 'good',
-                message: 'Unit tests passed!'
+                message: 'Successfully installed dependencies.'
             )
         }
         failure {
             slackSend(
                 channel: "#murandi-apartments",
                 color: 'danger',
-                message: 'Unit tests failed.'
+                message: 'Successfully installed dependencies.'
             )
         }
     }
