@@ -35,8 +35,9 @@ const sendVerificationEmail = async (email, token) => {
   };
   try {
     await transporter.sendMail(mailOptions);
-    console.log(`Verification email sent to ${email}`);
-  } catch (error) {}
+  } catch (error) {
+    throw error;
+  }
 };
 
 //Verify token sent in verification email
@@ -85,4 +86,60 @@ const verifyVerificationToken = async (req, res) => {
   }
 };
 
-module.exports = { sendVerificationEmail, verifyVerificationToken };
+//Resent verification email after token expires
+const resendVerificationEmail = async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ message: "Email is required." });
+  }
+
+  try {
+    //Check if tenant exisits
+    const findTenantQuery = `SELECT * FROM tenants WHERE email =$1`;
+    const result = await client.query(findTenantQuery, [email]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "Tenant not found." });
+    }
+
+    const tenant = result.rows[0];
+
+    //Check if account is already verified
+    if (tenant.isverified) {
+      return res
+        .status(400)
+        .json({ message: "Account is already verified. Please login." });
+    }
+
+    // Generate new verification token
+    const plainToken = crypto.randomBytes(32).toString("hex");
+    const hashedToken = crypto
+      .createHash("sha256")
+      .update(plainToken)
+      .digest("hex");
+
+    const newExpiry = new Date(Date.now() + 2 * 60 * 1000);
+
+    //Update tenant's token and expiry
+    const updateTokenQuery = `
+       UPDATE tenants 
+      SET verificationtoken = $1, verificationtokenexpiry = $2 
+      WHERE email = $3
+      `;
+
+    await client.query(updateTokenQuery, [hashedToken, newExpiry, email]);
+
+    //Send verification email
+    await sendVerificationEmail(email, plainToken);
+
+    return res
+      .status(200)
+      .json({ message: "Verification email resent successfully." });
+  } catch (error) {
+    console.error("Error resending verification email:", error);
+    return res.status(500).json({ message: "Internal server error." });
+  }
+};
+
+module.exports = { sendVerificationEmail, verifyVerificationToken, resendVerificationEmail };
