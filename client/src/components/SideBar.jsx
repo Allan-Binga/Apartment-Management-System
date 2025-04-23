@@ -11,7 +11,7 @@ function SideBar() {
     const fetchUser = async () => {
       try {
         const response = await axios.get(`${endpoint}/users/tenant/me`, {
-          withCredentials: true
+          withCredentials: true,
         });
         setFirstName(response.data.firstName);
       } catch (error) {
@@ -44,7 +44,7 @@ function SideBar() {
         <ul className="space-y-4 text-gray-700 text-sm">
           <li>
             <a
-              href="#"
+              href="payments"
               className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-blue-100 transition-colors"
             >
               <CreditCard className="w-6 h-6" />
@@ -53,7 +53,7 @@ function SideBar() {
           </li>
           <li>
             <a
-              href="#"
+              href="maintenance-requests"
               className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-blue-100 transition-colors"
             >
               <Wrench className="w-6 h-6" />
@@ -62,7 +62,7 @@ function SideBar() {
           </li>
           <li>
             <a
-              href="#"
+              href="profile"
               className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-blue-100 transition-colors"
             >
               <User className="w-6 h-6" />
@@ -70,10 +70,7 @@ function SideBar() {
             </a>
           </li>
           <li>
-            <a
-              href=""
-              className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-red-200 transition-colors"
-            >
+            <a className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-red-200 transition-colors">
               <LogOut className="w-6 h-6" />
               <span>Logout</span>
             </a>

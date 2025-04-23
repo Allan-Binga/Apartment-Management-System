@@ -196,6 +196,7 @@ function TenantRegister() {
                 name="leaseStartDate"
                 value={formData.leaseStartDate}
                 onChange={handleChange}
+                min={new Date().toISOString().split("T")[0]}
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
@@ -210,6 +211,7 @@ function TenantRegister() {
                 name="leaseEndDate"
                 value={formData.leaseEndDate}
                 onChange={handleChange}
+                min={formData.leaseStartDate}
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>

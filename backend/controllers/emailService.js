@@ -79,7 +79,6 @@ const verifyVerificationToken = async (req, res) => {
 
     // await sendAccountConfirmationEmail(tenant.email);
 
-    await user.save();
     res.json({ message: "Account verified successfully." });
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });

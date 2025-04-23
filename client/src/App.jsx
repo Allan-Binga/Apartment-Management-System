@@ -8,6 +8,9 @@ import LandlordLogin from "./pages/Landlord/Login";
 import AdminRegister from "./pages/Admin/Register";
 import AdminLogin from "./pages/Admin/Login";
 import Verify from "./pages/accountVerification/Verify";
+import Payments from "./pages/Payments/Payments";
+import Maintenance from "./pages/Maintenance/Maintenance";
+import Profile from "./pages/Profile/Profile";
 
 function App() {
   return (
@@ -22,6 +25,9 @@ function App() {
         <Route path="/signup/admin" element={<AdminRegister />} />
         <Route path="/login/admin" element={<AdminLogin />} />
         <Route path="/account-verification" element={<Verify/>}/>
+        <Route path="/maintenance-requests" element={<Maintenance/>}/>
+        <Route path="/payments" element={<Payments/>}/>
+        <Route path="/profile" element={<Profile/>}/>
       </Routes>
     </Router>
   );
