@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useLocation, useParams } from "react-router-dom";
 import axios from "axios";
 import Logo from "../../src/assets/logo.png";
 import { CreditCard, Wrench, User, LogOut } from "lucide-react";
@@ -6,6 +7,7 @@ import { endpoint } from "../apiEndpoint";
 
 function SideBar() {
   const [firstName, setFirstName] = useState("");
+  const location = useLocation();
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -44,8 +46,12 @@ function SideBar() {
         <ul className="space-y-4 text-gray-700 text-sm">
           <li>
             <a
-              href="payments"
-              className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-blue-100 transition-colors"
+              href="/payments"
+              className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                location.pathname === "/payments"
+                  ? "bg-blue-100"
+                  : "hover:bg-blue-100"
+              }`}
             >
               <CreditCard className="w-6 h-6" />
               <span>Rent Payments</span>
@@ -53,8 +59,12 @@ function SideBar() {
           </li>
           <li>
             <a
-              href="maintenance-requests"
-              className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-blue-100 transition-colors"
+              href="/maintenance-requests"
+              className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                location.pathname === "/maintenance-requests"
+                  ? "bg-blue-100"
+                  : "hover:bg-blue-100"
+              }`}
             >
               <Wrench className="w-6 h-6" />
               <span>Maintenance Requests</span>
@@ -62,8 +72,12 @@ function SideBar() {
           </li>
           <li>
             <a
-              href="profile"
-              className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-blue-100 transition-colors"
+              href="/profile"
+              className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                location.pathname === "/profile"
+                  ? "bg-blue-100"
+                  : "hover:bg-blue-100"
+              }`}
             >
               <User className="w-6 h-6" />
               <span>Profile</span>

@@ -11,6 +11,8 @@ import Verify from "./pages/accountVerification/Verify";
 import Payments from "./pages/Payments/Payments";
 import Maintenance from "./pages/Maintenance/Maintenance";
 import Profile from "./pages/Profile/Profile";
+import Contact from "./pages/Contact/Contact";
+import About from "./pages/About/About";
 
 function App() {
   return (
@@ -28,6 +30,8 @@ function App() {
         <Route path="/maintenance-requests" element={<Maintenance/>}/>
         <Route path="/payments" element={<Payments/>}/>
         <Route path="/profile" element={<Profile/>}/>
+        <Route path="/contact" element={<Contact/>}/>
+        <Route path="/about" element={<About/>}/>
       </Routes>
     </Router>
   );
