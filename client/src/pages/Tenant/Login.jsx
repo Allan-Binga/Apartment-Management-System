@@ -3,6 +3,9 @@ import { Link, useNavigate } from "react-router-dom";
 import signupImage from "../../assets/signup.jpg";
 import { Eye, EyeOff } from "lucide-react";
 import { endpoint } from "../../apiEndpoint";
+import { ToastContainer, toast} from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Spinner from "../../components/Spinner";
 
 function TenantLogin() {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -18,7 +21,6 @@ function TenantLogin() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
     setLoading(true);
 
     try {
@@ -36,9 +38,17 @@ function TenantLogin() {
       if (!response.ok) {
         throw new Error(data.message || "Login failed");
       }
-      navigate("/");
+      toast.success("Login successful!", {
+        className:
+          "bg-green-100 text-green-800 font-medium rounded-md p-3 shadow",
+      });
+      setTimeout(() => {
+        navigate("/");
+      }, 5000);
     } catch (error) {
-      setError(error.message);
+      toast.error(error.message || "Something went wrong", {
+        className: "bg-red-100 text-red-800 font-medium rounded-md p-3 shadow",
+      });
     } finally {
       setLoading(false);
     }
@@ -49,6 +59,21 @@ function TenantLogin() {
       className="min-h-screen bg-cover bg-center relative flex items-center justify-center"
       style={{ backgroundImage: `url(${signupImage})` }}
     >
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        toastClassName="rounded-lg bg-white shadow-md border-l-4 border-blue-500 p-4 text-sm text-gray-800"
+        bodyClassName="flex items-center"
+        progressClassName="bg-blue-400 h-1 rounded"
+      />
       {/* Blur overlay */}
       <div className="absolute inset-0 backdrop-blur-sm bg-black/30 z-0"></div>
 
@@ -58,7 +83,11 @@ function TenantLogin() {
         </h1>
         <p className="text-gray-600 mt-2 text-center">Enter your credentials</p>
 
-        {error && <p className="text-red-600 text-sm text-center">{error}</p>}
+        {loading && (
+          <div className="flex justify-center my-4">
+            <Spinner />
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-6 mt-6">
           <div>
@@ -104,11 +133,9 @@ function TenantLogin() {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full py-3 font-semibold rounded-lg transition duration-200 ${
-              loading ? "bg-gray-400" : "bg-blue-500 hover:bg-blue-700"
-            } text-white`}
+            className={"w-full py-3 font-semibold rounded-lg transition duration-200  bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"}
           >
-            {loading ? "Logging in..." : "Login"}
+            Login
           </button>
         </form>
 

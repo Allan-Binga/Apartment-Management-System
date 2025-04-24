@@ -3,6 +3,9 @@ import signupImage from "../../assets/signup2.jpg";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import { endpoint } from "../../apiEndpoint";
+import { ToastContainer, toast, Bounce } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Spinner from "../../components/Spinner";
 
 function LandlordLogin() {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -36,9 +39,17 @@ function LandlordLogin() {
       if (!response.ok) {
         throw new Error(data.message || "Login failed");
       }
-      navigate("/");
+      toast.success("Login successful", {
+        className:
+          "bg-green-100 text-green-800 font-medium rounded-md p-3 shadow",
+      });
+      setTimeout(() => {
+        navigate("/home/landlord");
+      }, 5000);
     } catch (error) {
-      setError(error.message);
+      toast.error(error.message || "Something went wrong.", {
+        className: "bg-red-100 text-red-800 font-medium rounded-md p-3 shadow",
+      });
     } finally {
       setLoading(false);
     }
@@ -51,6 +62,22 @@ function LandlordLogin() {
         backgroundImage: `url(${signupImage})`,
       }}
     >
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        toastClassName="rounded-lg bg-white shadow-md border-l-4 border-blue-500 p-4 text-sm text-gray-800"
+        bodyClassName="flex items-center"
+        progressClassName="bg-blue-400 h-1 rounded"
+      />
+
       {/* Blur overlay */}
       <div className="absolute inset-0 backdrop-blur-sm bg-black/30 z-0"></div>
 
@@ -63,8 +90,11 @@ function LandlordLogin() {
           Enter your credentials below
         </p>
 
-        {error && <p className="text-red-600 text-sm text-center">{error}</p>}
-
+        {loading && (
+          <div className="flex justify-center my-4">
+            <Spinner />
+          </div>
+        )}
         <form onSubmit={handleSubmit} className="flex flex-col gap-6 mt-8">
           {/* Email Input */}
           <div>

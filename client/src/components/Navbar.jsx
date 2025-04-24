@@ -5,33 +5,31 @@ function Navbar() {
   return (
     <nav className="w-full flex items-center justify-between px-6 py-4 bg-white">
       {/* Left side: Title */}
-      <h1 className="text-xl font-semibold text-gray-700">
-        Available Apartments
-      </h1>
+      <h1 className="text-xl font-semibold text-gray-700"></h1>
 
       {/* Center: Navigation links styled as buttons */}
       <div className="flex gap-6 justify-center items-center flex-1">
         <Link
           to="/"
-          className="text-lg text-black cursor-pointer font-bold hover:font-bold hover:border-b-2 hover:border-black text-blue-400"
+          className="text-lg  cursor-pointer font-bold hover:font-bold hover:border-b-2 hover:border-black text-blue-400"
         >
           Home
         </Link>
         <Link
           to="/about"
-          className="text-lg text-black cursor-pointer font-bold hover:font-bold hover:border-b-2 hover:border-black text-blue-400"
+          className="text-lg  cursor-pointer font-bold hover:font-bold hover:border-b-2 hover:border-black text-blue-400"
         >
           About
         </Link>
         <Link
           to="/contact"
-          className="text-lg text-black cursor-pointer font-bold hover:font-bold hover:border-b-2 hover:border-black text-blue-400"
+          className="text-lg cursor-pointer font-bold hover:font-bold hover:border-b-2 hover:border-black text-blue-400"
         >
           Contact
         </Link>
         <Link
           to="/login/tenant"
-          className="text-lg text-black cursor-pointer font-bold hover:font-bold hover:border-b-2 hover:border-black text-blue-400"
+          className="text-lg  cursor-pointer font-bold hover:font-bold hover:border-b-2 hover:border-black text-blue-400"
         >
           Login
         </Link>
@@ -40,7 +38,7 @@ function Navbar() {
       {/* Right side: Bell first and Search bar */}
       <div className="w-full max-w-sm min-w-[200px] flex items-center space-x-3">
         {/* Bell icon */}
-        <Bell className="w-5 h-5 text-gray-600" size={40}/>
+        <Bell className="w-6 h-6 text-gray-600" />
 
         {/* Search bar */}
         <div className="relative flex items-center w-full">

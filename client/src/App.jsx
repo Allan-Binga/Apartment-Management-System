@@ -13,6 +13,8 @@ import Maintenance from "./pages/Maintenance/Maintenance";
 import Profile from "./pages/Profile/Profile";
 import Contact from "./pages/Contact/Contact";
 import About from "./pages/About/About";
+import Notifications from "./pages/Notifications/Notifications";
+import LandlordHome from "./pages/Landlord/Home";
 
 function App() {
   return (
@@ -32,6 +34,8 @@ function App() {
         <Route path="/profile" element={<Profile/>}/>
         <Route path="/contact" element={<Contact/>}/>
         <Route path="/about" element={<About/>}/>
+        <Route path="/notifications" element={<Notifications/>}/>
+        <Route path="/home/landlord" element={<LandlordHome/>}/>
       </Routes>
     </Router>
   );

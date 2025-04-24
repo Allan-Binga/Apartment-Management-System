@@ -1,9 +1,12 @@
-import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import signupImage from "../../assets/signup.jpg";
 import { Eye, EyeOff } from "lucide-react";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
+import Spinner from "../../components/Spinner";
+import { ToastContainer, toast, Bounce } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { endpoint } from "../../apiEndpoint"; //BACKEND API
 
 //Apartment options
@@ -57,6 +60,19 @@ function TenantRegister() {
         backgroundImage: `url(${signupImage})`,
       }}
     >
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        transition={Bounce}
+      />
       {/* Blur overlay */}
       <div className="absolute inset-0 backdrop-blur-sm bg-black/30 z-0"></div>
 
@@ -73,6 +89,12 @@ function TenantRegister() {
         {success && (
           <p className="text-green-600 text-sm text-center">{success}</p>
         )}
+        {loading && (
+          <div className="flex justify-center my-4">
+            <Spinner />
+          </div>
+        )}
+
         <form
           onSubmit={async (e) => {
             e.preventDefault();
@@ -95,10 +117,12 @@ function TenantRegister() {
                 throw new Error(data.message || "Something went wrong.");
               }
 
-              setSuccess(data.message);
-              navigate("/login/tenant");
+              toast.success(data.message);
+              setTimeout(() => {
+                navigate("/login/tenant");
+              }, 5000);
             } catch (err) {
-              setError(err.message);
+              toast.error(err.message);
             } finally {
               setLoading(false);
             }
@@ -248,7 +272,7 @@ function TenantRegister() {
               loading ? "bg-gray-400" : "bg-blue-500 hover:bg-blue-700"
             } text-white`}
           >
-            {loading ? "Registering..." : "Register"}
+            Signup
           </button>
         </form>
 

@@ -4,10 +4,24 @@ import axios from "axios";
 import Logo from "../../src/assets/logo.png";
 import { CreditCard, Wrench, User, LogOut } from "lucide-react";
 import { endpoint } from "../apiEndpoint";
+import { ToastContainer, toast, Bounce } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Spinner from "./Spinner"
 
 function SideBar() {
   const [firstName, setFirstName] = useState("");
   const location = useLocation();
+
+  //Handle Logout
+  const handleLogout = async () => {
+    try {
+      await logoutUser();
+      toast.success("Successfully logged out.");
+      navigate("/");
+    } catch (error) {
+      toast.error("User not logged in.");
+    }
+  };
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -27,6 +41,23 @@ function SideBar() {
   return (
     <aside className="fixed left-0 top-0 h-full w-72 bg-white p-4 rounded-tr-2xl rounded-br-2xl shadow-md flex flex-col justify-between">
       <div>
+        <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+          transition={Bounce}
+          toastClassName="rounded-lg bg-white shadow-md border-l-4 border-blue-500 p-4 text-sm text-gray-800"
+          bodyClassName="flex items-center"
+          progressClassName="bg-blue-400 h-1 rounded"
+        />
+
         {/* Logo */}
         <div className="mb-6 flex justify-center">
           <img src={Logo} alt="Apartment Logo" className="h-45 w-45" />
@@ -84,7 +115,7 @@ function SideBar() {
             </a>
           </li>
           <li>
-            <a className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-red-200 transition-colors">
+            <a className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-red-200 transition-colors cursor-pointer">
               <LogOut className="w-6 h-6" />
               <span>Logout</span>
             </a>
