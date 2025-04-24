@@ -8,10 +8,10 @@ function Contact() {
     <div className="flex flex-col min-h-screen">
       <Navbar className="z-10" />
 
-      <div className="flex flex-1">
+      <div className="flex flex-1 bg-gray-50">
         <SideBar />
 
-        <main className="flex-1 p-6 bg-gray-50">
+        <main className="flex-1 ml-[calc(18rem+2rem)] p-6 bg-gray-50">
           <div className="bg-white p-8 rounded-2xl shadow-sm max-w-6xl mx-auto flex gap-12">
             {/* Left: Contact Form */}
             <div className="w-2/3">
