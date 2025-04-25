@@ -3,13 +3,13 @@ const {
   getTenants,
   getLandlords,
   getAdmins,
-  getCurrentTenant,
+  getCurrentMurandiUser
 } = require("../controllers/users");
 
 const router = express.Router();
 
 //Routes
-router.get("/tenant/me", getCurrentTenant);
+router.get("/me", getCurrentMurandiUser);
 router.get("/tenants", getTenants);
 router.get("/landlords", getLandlords);
 router.get("/admins", getAdmins);

@@ -58,7 +58,11 @@ const createRequest = async (req, res) => {
       VALUES ($1, $2, 'Pending', $3) RETURNING *;
     `;
 
-    const result = await client.query(insertQuery, [tenantId, issueDescription, category]);
+    const result = await client.query(insertQuery, [
+      tenantId,
+      issueDescription,
+      category,
+    ]);
     const request = result.rows[0];
 
     // Step 2: Find a technician that matches the category
@@ -72,8 +76,9 @@ const createRequest = async (req, res) => {
     if (technician) {
       // Step 3: Assign technician to this request
       await client.query(
-        `UPDATE maintenance_requests SET technician_id = $1 WHERE id = $2`,
-        [technician.id, request.id]
+        `UPDATE maintenance_requests SET technician_id = $1 WHERE request_id = $2`,
+
+        [technician.id, request.request_id]
       );
       request.technician_id = technician.id; // optional, to show in response
     }
@@ -90,5 +95,36 @@ const createRequest = async (req, res) => {
   }
 };
 
+//Mark Request as Completed
+const completeRequest = async (req, res) => {
+  try {
+    const requestId = req.params.id;
 
-module.exports = { createRequest, getRequests, getUserRequest };
+    const updateQuery = `
+      UPDATE maintenance_requests
+      SET status = 'Completed'
+      WHERE request_id = $1
+      RETURNING *;
+    `;
+
+    const result = await client.query(updateQuery, [requestId]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ message: "Request not found." });
+    }
+
+    res.status(200).json({
+      message: "Request marked as completed.",
+      request: result.rows[0],
+    });
+  } catch (error) {
+    console.error("Error completing request:", error);
+    res.status(500).json({ message: "Failed to update request status." });
+  }
+};
+module.exports = {
+  createRequest,
+  getRequests,
+  getUserRequest,
+  completeRequest,
+};

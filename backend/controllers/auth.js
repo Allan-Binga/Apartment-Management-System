@@ -2,7 +2,7 @@ const client = require("../config/db.js");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
-const {sendVerificationEmail} = require("./emailService.js")
+const { sendVerificationEmail } = require("./emailService.js");
 
 //Tenant Registration
 const registerTenant = async (req, res) => {
@@ -199,6 +199,7 @@ const loginTenant = async (req, res) => {
     const tenantToken = jwt.sign(
       {
         tenant: tenant.rows[0].id,
+        role: "tenant",
         firstName: tenant.rows[0].firstname,
       },
       process.env.JWT_SECRET,
@@ -326,7 +327,11 @@ const loginLandlord = async (req, res) => {
 
     //Create JWT landlord token
     const landlordToken = jwt.sign(
-      { landlord: landlord.rows[0].id, firstName: landlord.rows[0].firstname },
+      {
+        landlord: landlord.rows[0].id,
+        role: "landlord",
+        firstName: landlord.rows[0].firstname,
+      },
 
       process.env.JWT_SECRET,
       { expiresIn: "24h" }
@@ -452,7 +457,7 @@ const loginAdmin = async (req, res) => {
 
     // Create JWT tenant token
     const adminToken = jwt.sign(
-      { admin: admin.rows[0].id },
+      { admin: admin.rows[0].id, role: "admin" },
       process.env.JWT_SECRET,
       { expiresIn: "24h" } // Token expires in 24 hours
     );

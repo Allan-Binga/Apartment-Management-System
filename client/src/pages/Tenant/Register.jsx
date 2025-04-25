@@ -9,27 +9,6 @@ import { ToastContainer, toast, Bounce } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { endpoint } from "../../apiEndpoint"; //BACKEND API
 
-//Apartment options
-function getApartments() {
-  return [
-    "A 101",
-    "A 102",
-    "A 103",
-    "A 104",
-    "A 105",
-    "B 101",
-    "B 102",
-    "B 103",
-    "B 104",
-    "B 105",
-    "C 101",
-    "C 102",
-    "C 103",
-    "C 104",
-    "C 105",
-  ];
-}
-
 function TenantRegister() {
   const apartmentOptions = getApartments();
   const [showPassword, setShowPassword] = useState(false);
@@ -47,6 +26,27 @@ function TenantRegister() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const navigate = useNavigate();
+
+  //Apartment options
+  function getApartments() {
+    return [
+      "A 101",
+      "A 102",
+      "A 103",
+      "A 104",
+      "A 105",
+      "B 101",
+      "B 102",
+      "B 103",
+      "B 104",
+      "B 105",
+      "C 101",
+      "C 102",
+      "C 103",
+      "C 104",
+      "C 105",
+    ];
+  }
 
   const handleChange = (e) => {
     const { name, value } = e.target;

@@ -8,7 +8,9 @@ const authTenant = (req, res, next) => {
   try {
     const token = req.cookies.tenantSession;
     if (!token) {
-      return res.status(401).json({ message: "Unauthorized tenant." });
+      return res
+        .status(401)
+        .json({ message: "Unauthorized. Please login as tenant." });
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -26,7 +28,9 @@ const authLandlord = (req, res, next) => {
   try {
     const token = req.cookies.landlordSession;
     if (!token) {
-      return res.status(401).json({ message: "Unauthorized, please login as landlord." });
+      return res
+        .status(401)
+        .json({ message: "Unauthorized. Please login as landlord." });
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -44,7 +48,9 @@ const authAdmin = (req, res, next) => {
   try {
     const token = req.cookies.adminSession;
     if (!token) {
-      return res.status(401).json({ message: "Unauthorized admin." });
+      return res
+        .status(401)
+        .json({ message: "Unauthorized. Please log in as administrator." });
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);

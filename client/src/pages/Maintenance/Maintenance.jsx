@@ -12,34 +12,23 @@ import {
 import SideBar from "../../components/SideBar";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
+import { endpoint } from "../../apiEndpoint";
+import Spinner from "../../components/Spinner";
+import axios from "axios";
 
 function Maintenance() {
-  const [requests, setRequests] = useState([
-    {
-      id: 1,
-      title: "Leaking faucet in kitchen",
-      description: "The faucet won't stop dripping.",
-      status: "Pending",
-      date: "2025-04-22",
-    },
-    {
-      id: 2,
-      title: "Broken AC unit",
-      description: "AC isn't blowing cold air.",
-      status: "In Progress",
-      date: "2025-04-20",
-    },
-    {
-      id: 3,
-      title: "Faulty bulb holder",
-      description:
-        "Tried different bulbs but couldn't light. It's definately the wiring.",
-      status: "Completed",
-      date: "2025-04-20",
-    },
-  ]);
+  const [requests, setRequests] = useState([]);
+  const [formData, setFormData] = useState({ title: "", description: "" });
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
 
-  const [form, setForm] = useState({ title: "", description: "" });
+const submitMaintenanceRequest = async () => {
+  try {
+    const response = await axios.post()
+  } catch (error) {
+    
+  }
+}
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -104,7 +93,7 @@ function Maintenance() {
                 name="description"
                 value={form.description}
                 onChange={handleChange}
-                className="w-full border border-gray-300 px-3 py-2 rounded-md  rounded-md focus:outline-none focus:ring-2 focus:ring-gray-100"
+                className="w-full border border-gray-300 px-3 py-2 rounded-md  focus:outline-none focus:ring-2 focus:ring-gray-100"
                 rows="4"
                 placeholder="Describe the issue in detail"
                 required

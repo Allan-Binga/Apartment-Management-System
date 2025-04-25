@@ -6,7 +6,7 @@ import { CreditCard, Wrench, User, LogOut } from "lucide-react";
 import { endpoint } from "../apiEndpoint";
 import { ToastContainer, toast, Bounce } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Spinner from "./Spinner"
+import Spinner from "../components/Spinner"
 
 function SideBar() {
   const [firstName, setFirstName] = useState("");
@@ -26,7 +26,7 @@ function SideBar() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await axios.get(`${endpoint}/users/tenant/me`, {
+        const response = await axios.get(`${endpoint}/users/me`, {
           withCredentials: true,
         });
         setFirstName(response.data.firstName);

@@ -1,5 +1,5 @@
 const client = require("../config/db");
-const jwt = require("jsonwebtoken")
+const jwt = require("jsonwebtoken");
 
 //Fetch All Tenants
 const getTenants = async (req, res) => {
@@ -12,17 +12,33 @@ const getTenants = async (req, res) => {
   }
 };
 
-//Get current tenant
-const getCurrentTenant = (req, res) => {
-  const token = req.cookies.tenantSession;
-  if (!token) return res.status(401).json({ message: "Not logged in." });
+//Get current user
+const getCurrentMurandiUser = (req, res) => {
+  const { tenantSession, landlordSession, adminSession } = req.cookies;
 
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    return res.status(200).json({ firstName: decoded.firstName });
-  } catch (error) {
-    return res.status(401).json({ message: "Invalid token." });
+  let token, role;
+
+  if (tenantSession) {
+    token = tenantSession;
+    role = "tenant";
+  } else if (landlordSession) {
+    token = landlordSession;
+    role = "landlord";
+  } else if (adminSession) {
+    token = adminSession;
+    role = "admin";
+  } else {
+    return res.status(401).json({ message: "Not logged in" });
   }
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    if (err) return res.status(403).json({ message: "Invalid token" });
+
+    res.json({
+      firstName: decoded.firstName,
+      role: role,
+    });
+  });
 };
 
 //Fetch All Landlords
@@ -45,4 +61,4 @@ const getAdmins = async (req, res) => {
   }
 };
 
-module.exports = { getTenants, getLandlords, getAdmins,getCurrentTenant };
+module.exports = { getTenants, getLandlords, getAdmins, getCurrentMurandiUser };
