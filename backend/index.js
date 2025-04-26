@@ -2,6 +2,7 @@ const express = require("express");
 const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
+const path = require("path");
 const authRoute = require("./routes/auth");
 const usersRoute = require("./routes/users");
 const listingsRoute = require("./routes/listings");
@@ -37,6 +38,14 @@ app.use("/murandi/v1/listings", listingsRoute);
 app.use("/murandi/v1/payments", paymentRoute);
 app.use("/murandi/v1/maintenance", maintenanceRequestRoute);
 app.use("/murandi/v1/checkout", checkoutRoute);
+
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "client", "dist")));
+
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "client", "dist", "index.html"));
+  });
+}
 
 app.listen(5700, () => {
   console.log("Server started on port 5700");
