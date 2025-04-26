@@ -2,15 +2,22 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { Search, Bell } from "lucide-react";
+import { endpoint } from "../apiEndpoint";
 
 function Navbar() {
-  const [user, setUser] = useState(null); // better to default to null or undefined
+  const [user, setUser] = useState(undefined); // better to default to null or undefined
 
   useEffect(() => {
     axios
-      .get("/users/me", { withCredentials: true })
-      .then((res) => setUser(res.data))
-      .catch(() => setUser(null));
+      .get(`${endpoint}/users/me`, { withCredentials: true })
+      .then((res) => {
+        console.log("User found:", res.data);
+        setUser(res.data);
+      })
+      .catch((err) => {
+        console.log("User not logged in:", err.response?.status); // should log 401
+        setUser(null);
+      });
   }, []);
 
   return (
@@ -37,7 +44,7 @@ function Navbar() {
           Contact
         </Link>
 
-        {!user && (
+        {user === null && (
           <Link
             to="/login/tenant"
             className="text-lg font-bold hover:border-b-2 text-blue-400"
@@ -45,12 +52,6 @@ function Navbar() {
             Login
           </Link>
         )}
-
-        {/* {user && (
-          <span className="text-gray-600 text-sm italic">
-            Hello, {user.firstName} ({user.role})
-          </span>
-        )} */}
       </div>
 
       <div className="w-full max-w-sm min-w-[200px] flex items-center space-x-3">
