@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { CreditCard, History, CalendarDays, X } from "lucide-react";
+import axios from "axios";
+import { endpoint } from "../../apiEndpoint";
 import SideBar from "../../components/SideBar";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
@@ -14,6 +16,21 @@ function Payments() {
   const handleMpesaClick = () => {
     setIsModalOpen(false);
     setShowMpesaModal(true);
+  };
+
+  //Stripe API
+  const handleCheckout = async () => {
+    try {
+      const response = await axios.post(
+        `${endpoint}/checkout/create-checkout-session`,
+        {},
+        { withCredentials: true }
+      );
+      const { url } = response.data;
+      window.location.href = url;
+    } catch (error) {
+      console.error("Error creating checkout session", error);
+    }
   };
 
   const handleSubmitMpesa = () => {
@@ -109,7 +126,10 @@ function Payments() {
               Choose Payment Method
             </h2>
             <div className="space-y-4">
-              <button className="w-full flex items-center gap-3 bg-purple-900 text-white py-6 px-4 rounded-xl hover:bg-purple-700 transition cursor-pointer">
+              <button
+                onClick={handleCheckout}
+                className="w-full flex items-center gap-3 bg-purple-900 text-white py-6 px-4 rounded-xl hover:bg-purple-700 transition cursor-pointer"
+              >
                 <img
                   src={StripeLogo}
                   alt="Stripe"

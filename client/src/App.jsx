@@ -15,6 +15,8 @@ import Contact from "./pages/Contact/Contact";
 import About from "./pages/About/About";
 import Notifications from "./pages/Notifications/Notifications";
 import LandlordHome from "./pages/Landlord/Home";
+import SuccessPage from "./pages/Success/Success";
+import CancelPage from "./pages/Cancel/Cancel";
 
 function App() {
   return (
@@ -28,14 +30,16 @@ function App() {
         <Route path="/login/landlord" element={<LandlordLogin />} />
         <Route path="/signup/admin" element={<AdminRegister />} />
         <Route path="/login/admin" element={<AdminLogin />} />
-        <Route path="/account-verification" element={<Verify/>}/>
-        <Route path="/maintenance-requests" element={<Maintenance/>}/>
-        <Route path="/payments" element={<Payments/>}/>
-        <Route path="/profile" element={<Profile/>}/>
-        <Route path="/contact" element={<Contact/>}/>
-        <Route path="/about" element={<About/>}/>
-        <Route path="/notifications" element={<Notifications/>}/>
-        <Route path="/home/landlord" element={<LandlordHome/>}/>
+        <Route path="/account-verification" element={<Verify />} />
+        <Route path="/maintenance-requests" element={<Maintenance />} />
+        <Route path="/payments" element={<Payments />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/notifications" element={<Notifications />} />
+        <Route path="/home/landlord" element={<LandlordHome />} />
+        <Route path="/payment/success" element={<SuccessPage />} />
+        <Route path="/payment/cancelled" element={<CancelPage />} />
       </Routes>
     </Router>
   );

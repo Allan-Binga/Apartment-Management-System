@@ -20,14 +20,14 @@ const createRentCheckoutSession = async (req, res) => {
     const apartmentNumber = tenantResult.rows[0].apartmentnumber;
 
     //Get rent amount from apartment_listings
-    const rentQuery = `SELECT price FROM apartment_listings WHERE apartmentnumber = $1`;
+    const rentQuery = `SELECT price, IMAGE FROM apartment_listings WHERE apartmentnumber = $1`;
     const rentResult = await client.query(rentQuery, [apartmentNumber]);
 
     if (rentResult.rows.length === 0) {
       return res.status(404).json({ error: "Apartment listing not found" });
     }
 
-    const rentAmount = rentResult.rows[0].price;
+    const { price: rentAmount, image: apartmentImage } = rentResult.rows[0];
 
     //Current Date
     const today = new Date().toISOString().split("T")[0];
@@ -42,15 +42,17 @@ const createRentCheckoutSession = async (req, res) => {
     const result = await client.query(insertPaymentQuery, values);
     const paymentId = result.rows[0].paymentid;
 
+
     //Stripe Session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items: [
         {
           price_data: {
-            currency: "usd",
+            currency: "kes",
             product_data: {
               name: `Rent Payment for Tenant ${tenantId}`,
+              images: apartmentImage ? [apartmentImage] : [],
             },
             unit_amount: rentAmount * 100, // Cents
           },
@@ -58,8 +60,8 @@ const createRentCheckoutSession = async (req, res) => {
         },
       ],
       mode: "payment",
-      success_url: `${process.env.CLIENT_URL}`,
-      cancel_url: `${process.env.CLIENT_URL}/cancel`,
+      success_url: `${process.env.CLIENT_URL}/payment/success`,
+      cancel_url: `${process.env.CLIENT_URL}/payment/cancelled`,
       metadata: {
         paymentId: paymentId.toString(),
         tenantId: tenantId.toString(),
