@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CreditCard, History, CalendarDays, X } from "lucide-react";
 import axios from "axios";
 import { endpoint } from "../../apiEndpoint";
@@ -7,11 +7,40 @@ import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import MpesaLogo from "../../assets/mpesa.png";
 import StripeLogo from "../../assets/stripe.png";
+import Spinner from "../../components/Spinner";
 
 function Payments() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showMpesaModal, setShowMpesaModal] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [payments, setPayments] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  const recentPayments = async () => {
+    try {
+      const response = await axios.get(`${endpoint}/payments/my-payments`, {
+        withCredentials: true,
+      });
+      return response.data;
+    } catch (error) {
+      throw error.response.data.message;
+    }
+  };
+
+  useEffect(() => {
+    const fetchPayouts = async () => {
+      setLoading(true);
+      try {
+        const data = await recentPayments();
+        setPayments(data);
+      } catch (error) {
+        console.error("Error fetching payments:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPayouts();
+  }, []);
 
   const handleMpesaClick = () => {
     setIsModalOpen(false);
@@ -40,11 +69,14 @@ function Payments() {
     setPhoneNumber("");
   };
 
-  const recentPayments = [
-    { date: "2025-04-01", amount: "$1000", status: "Paid" },
-    { date: "2025-03-01", amount: "$1000", status: "Paid" },
-    { date: "2025-02-01", amount: "$1000", status: "Paid" },
-  ];
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString("en-US", {
+      weekday: "short",
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -91,17 +123,38 @@ function Payments() {
                     </tr>
                   </thead>
                   <tbody>
-                    {recentPayments.map((payment, index) => (
-                      <tr key={index} className="border-b">
-                        <td className="px-4 py-2">{payment.date}</td>
-                        <td className="px-4 py-2">{payment.amount}</td>
-                        <td className="px-4 py-2">
-                          <span className="bg-green-100 text-green-600 px-2 py-1 rounded-full text-xs">
-                            {payment.status}
-                          </span>
+                    {loading ? (
+                      <tr>
+                        <td colSpan="3" className="px-4 py-2 text-center">
+                          <div className="scale-50">
+                            <Spinner />
+                          </div>
                         </td>
                       </tr>
-                    ))}
+                    ) : payments.length > 0 ? (
+                      payments.map((payment, index) => (
+                        <tr key={index} className="border-b border-gray-200">
+                          <td className="px-4 py-2">
+                            {formatDate(payment.paymentdate)}
+                          </td>
+                          <td className="px-4 py-2">{payment.amountpaid}</td>
+                          <td className="px-4 py-2">
+                            <span className="bg-green-100 text-green-600 px-2 py-1 rounded-full text-xs">
+                              {payment.paymentstatus}
+                            </span>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td
+                          colSpan="3"
+                          className="px-4 py-2 text-center text-gray-500 italic"
+                        >
+                          No payments found.
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>

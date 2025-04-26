@@ -78,7 +78,7 @@ const submitMaintenanceRequest = async () => {
               <label className="block font-medium text-gray-700">Title</label>
               <input
                 name="title"
-                value={form.title}
+                value={formData.title}
                 onChange={handleChange}
                 className="w-full border border-gray-300 px-3 py-3  rounded-md focus:outline-none focus:ring-2 focus:ring-gray-100"
                 placeholder="Short summary (e.g., Leaking sink)"
@@ -91,7 +91,7 @@ const submitMaintenanceRequest = async () => {
               </label>
               <textarea
                 name="description"
-                value={form.description}
+                value={formData.description}
                 onChange={handleChange}
                 className="w-full border border-gray-300 px-3 py-2 rounded-md  focus:outline-none focus:ring-2 focus:ring-gray-100"
                 rows="4"

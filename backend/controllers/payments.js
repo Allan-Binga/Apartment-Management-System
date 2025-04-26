@@ -1,19 +1,29 @@
-const client = require("../config/db")
+const client = require("../config/db");
 
 //Get All Payments
 const getAllPayments = async (req, res) => {
   try {
-    const payments = await client.query("SELECT * FROM payment")
-    res.status(200).json(payments.rows)
+    const payments = await client.query("SELECT * FROM payment");
+    res.status(200).json(payments.rows);
   } catch (error) {
-    res.status(500).json({message: "Could not fetch payments."})
+    res.status(500).json({ message: "Could not fetch payments." });
   }
 };
 
-//Get User's Payment
+// Get User's Payment
 const getUsersPayment = async (req, res) => {
+  const tenantId = req.tenantId;
+  // console.log(tenantId)
+
   try {
-  } catch (error) {}
+    const query = `SELECT * FROM payment WHERE tenantid = $1 ORDER BY paymentdate DESC`;
+    const result = await client.query(query, [tenantId]);
+
+    res.status(200).json(result.rows);
+  } catch (error) {
+    console.error("Error fetching tenant payments:", error.message);
+    res.status(500).json({ message: "Could not fetch user's payments." });
+  }
 };
 
 module.exports = { getAllPayments, getUsersPayment };

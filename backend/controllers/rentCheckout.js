@@ -1,6 +1,8 @@
 const dotenv = require("dotenv");
 const Stripe = require("stripe");
 const client = require("../config/db");
+const moment = require("moment");
+const axios = require("axios")
 
 dotenv.config();
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -42,7 +44,6 @@ const createRentCheckoutSession = async (req, res) => {
     const result = await client.query(insertPaymentQuery, values);
     const paymentId = result.rows[0].paymentid;
 
-
     //Stripe Session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
@@ -81,4 +82,80 @@ const createRentCheckoutSession = async (req, res) => {
   }
 };
 
-module.exports = { createRentCheckoutSession };
+const createMpesaCheckout = async (req, res) => {
+  try {
+    const { amount, phoneNumber } = req.body; // Get amount and phone number from request body
+    if (!amount || !phoneNumber) {
+      return res
+        .status(400)
+        .json({ message: "Amount and phone number are required" });
+    }
+
+    // Validate phone number format (must be 2547XXXXXXXX)
+    if (!/^2547\d{8}$/.test(phoneNumber)) {
+      return res.status(400).json({ message: "Invalid phone number format" });
+    }
+
+    const shortcode = 174379;
+    const passkey = process.env.PASSKEY;
+    const consumerKey = process.env.CONSUMER_KEY;
+    const consumerSecret = process.env.CONSUMER_SECRET;
+    const callbackUrl = process.env.CALLBACK_URL;
+
+    const timestamp = moment().format("YYYYMMDDHHmmss");
+    const password = Buffer.from(`${shortcode}${passkey}${timestamp}`).toString(
+      "base64"
+    );
+    const auth = Buffer.from(`${consumerKey}:${consumerSecret}`).toString(
+      "base64"
+    );
+
+    // Get access token
+    const tokenResponse = await axios.get(
+      "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials",
+      {
+        headers: {
+          Authorization: `Basic ${auth}`,
+        },
+      }
+    );
+    const accessToken = tokenResponse.data.access_token;
+
+    // STK Push request
+    const stkPush = await axios.post(
+      "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest",
+      {
+        BusinessShortCode: shortcode,
+        Password: password,
+        Timestamp: timestamp,
+        TransactionType: "CustomerPayBillOnline",
+        Amount: amount,
+        PartyA: phoneNumber,
+        PartyB: shortcode,
+        PhoneNumber: phoneNumber,
+        CallBackURL: callbackUrl,
+        AccountReference: "Murandi-Apartments",
+        TransactionDesc: "Rent Payment",
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+
+    res.status(200).json({
+      message: "STK Push initiated",
+      data: stkPush.data,
+    });
+  } catch (error) {
+    const errorMessage = error.response?.data?.errorMessage || error.message;
+    console.error("Error:", errorMessage);
+    res.status(500).json({
+      message: "Failed to initiate STK Push",
+      error: errorMessage,
+    });
+  }
+};
+
+module.exports = { createRentCheckoutSession, createMpesaCheckout };

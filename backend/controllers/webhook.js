@@ -53,4 +53,48 @@ const handleWebhook = async (req, res) => {
   res.status(200).send("Webhook received.");
 };
 
-module.exports = { handleWebhook };
+const handleMpesaCallback = async (req, res) => {
+  try {
+    const callback = req.body.Body.stkCallback;
+    const { MerchantRequestID, CheckoutRequestID, ResultCode, ResultDesc } =
+      callback;
+
+    if (ResultCode === 0) {
+      const metadata = callback.CallbackMetadata.Item;
+
+      const amount = metadata.find((item) => item.Name === "Amount")?.Value;
+      const phone = metadata.find((item) => item.Name === "PhoneNumber")?.Value;
+
+      // 🔥 OPTIONAL: Look up tenantid by phone number
+      const findTenantQuery = `SELECT tenantid FROM tenant WHERE phonenumber = $1`;
+      const tenantResult = await client.query(findTenantQuery, [phone]);
+
+      if (tenantResult.rows.length === 0) {
+        console.error("🚫 No tenant found with phone number:", phone);
+        return res.status(404).send("Tenant not found.");
+      }
+
+      const tenantId = tenantResult.rows[0].tenantid;
+
+      // ✅ Now insert into payment table
+      const insertQuery = `
+        INSERT INTO payment (tenantid, amountpaid, paymentdate, paymentmethod, paymentstatus)
+        VALUES ($1, $2, CURRENT_DATE, $3, $4)
+      `;
+
+      await client.query(insertQuery, [tenantId, amount, "mpesa", "paid"]);
+
+      console.log("✅ M-PESA payment recorded for tenant:", tenantId);
+    } else {
+      console.log(`❌ M-PESA transaction failed. Reason: ${ResultDesc}`);
+      // You can also log it to a separate table if you want
+    }
+
+    res.status(200).json({ message: "Callback received successfully" });
+  } catch (error) {
+    console.error("❌ Error handling M-PESA callback:", error.message);
+    res.status(500).send("Server error");
+  }
+};
+
+module.exports = { handleWebhook, handleMpesaCallback };
