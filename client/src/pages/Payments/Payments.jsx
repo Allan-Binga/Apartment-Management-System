@@ -15,6 +15,7 @@ function Payments() {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [payments, setPayments] = useState("");
   const [loading, setLoading] = useState(true);
+  const [loadingCheckout, setLoadingCheckout] = useState(false);
 
   const recentPayments = async () => {
     try {
@@ -49,6 +50,7 @@ function Payments() {
 
   //Stripe API
   const handleCheckout = async () => {
+    setLoadingCheckout(true);
     try {
       const response = await axios.post(
         `${endpoint}/checkout/create-checkout-session`,
@@ -59,6 +61,8 @@ function Payments() {
       window.location.href = url;
     } catch (error) {
       console.error("Error creating checkout session", error);
+    } finally {
+      setLoadingCheckout(false);
     }
   };
 
@@ -205,6 +209,7 @@ function Payments() {
                   className="h-12 w-18 rounded-sm"
                 />
                 <span className="flex-1 text-left">Pay with Stripe</span>
+                {loadingCheckout && <Spinner />}
               </button>
 
               <button

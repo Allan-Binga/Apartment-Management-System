@@ -2,7 +2,8 @@ const dotenv = require("dotenv");
 const Stripe = require("stripe");
 const client = require("../config/db");
 const moment = require("moment");
-const axios = require("axios")
+const axios = require("axios");
+const { sendRentPaymentEmail } = require("../controllers/emailService");
 
 dotenv.config();
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -12,14 +13,15 @@ const createRentCheckoutSession = async (req, res) => {
 
   try {
     //Find Tenant Apartment's Number
-    const tenantQuery = `SELECT apartmentnumber FROM tenants WHERE id = $1`;
+    const tenantQuery = `SELECT apartmentnumber, email FROM tenants WHERE id = $1`;
     const tenantResult = await client.query(tenantQuery, [tenantId]);
 
     if (tenantResult.rows.length === 0) {
       return res.status(404).json({ error: "Tenant not found" });
     }
 
-    const apartmentNumber = tenantResult.rows[0].apartmentnumber;
+    const { apartmentnumber: apartmentNumber, email: tenantEmail } =
+      tenantResult.rows[0];
 
     //Get rent amount from apartment_listings
     const rentQuery = `SELECT price, IMAGE FROM apartment_listings WHERE apartmentnumber = $1`;
@@ -33,6 +35,28 @@ const createRentCheckoutSession = async (req, res) => {
 
     //Current Date
     const today = new Date().toISOString().split("T")[0];
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const thirtyDaysAgoString = thirtyDaysAgo.toISOString().split("T")[0];
+
+    // Check if a payment was made in the last 30 days
+    const paymentCheckQuery = `
+      SELECT * FROM payment
+      WHERE tenantid = $1
+        AND paymentdate > $2
+        AND paymentstatus = 'pending' -- Only check payments that are pending or already made
+    `;
+    const paymentCheckResult = await client.query(paymentCheckQuery, [
+      tenantId,
+      thirtyDaysAgoString,
+    ]);
+
+    if (paymentCheckResult.rows.length > 0) {
+      return res.status(400).json({
+        error:
+          "You have already paid rent within the last 30 days. Please try again later.",
+      });
+    }
 
     const insertPaymentQuery = `
       INSERT INTO payment (tenantid, amountpaid, paymentdate, paymentmethod, paymentstatus)
@@ -73,6 +97,13 @@ const createRentCheckoutSession = async (req, res) => {
           tenantId: tenantId.toString(),
         },
       },
+    });
+
+    //Send Rent Confirmation Email
+    await sendRentPaymentEmail(tenantEmail, {
+      amountPaid: rentAmount,
+      apartmentNumber: apartmentNumber,
+      paymentDate: today,
     });
 
     res.status(200).json({ id: session.id, url: session.url });

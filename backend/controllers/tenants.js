@@ -78,6 +78,7 @@ const updateInformation = async (req, res) => {
 //Delete tenant from the system
 const deleteTenant = async (req, res) => {
   const tenantId = req.params.id;
+  // console.log(tenantId)
 
   try {
     //Retrieve apartment number for the tenant

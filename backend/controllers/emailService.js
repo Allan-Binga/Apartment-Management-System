@@ -171,9 +171,45 @@ const sendMaintenanceRequestEmail = async (email, request) => {
   }
 };
 
+//Send Rent Payment Email
+const sendRentPaymentEmail = async (email, {amountPaid, apartmentNumber, paymentDate}) => {
+  const subject = "Rent Payment Confirmation";
+
+  //Calculate Next Rent Date
+  const currentDate = new Date(paymentDate);
+  const nextPaymentDate = new Date(currentDate);
+  nextPaymentDate.setDate(currentDate.getDate() + 30);
+  const formattedNextPaymentDate = nextPaymentDate.toISOString().split('T')[0];
+
+  const message = `
+    <div style="font-family: Arial, sans-serif; text-align: center; padding: 20px; background-color: #f4f4f4;">
+      <div style="max-width: 600px; margin: auto; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+        <h2 style="color: #333;">Rent Payment Received</h2>
+        <p style="color: #555;">Dear Tenant,</p>
+        <p style="color: #555;">We have received your rent payment of <strong>KES ${amountPaid}</strong> for Apartment <strong>${apartmentNumber}</strong> on <strong>${paymentDate}</strong>.</p>
+        <p style="color: #555;">Your next rent payment is due by <strong>${formattedNextPaymentDate}</strong>.</p>
+        <p style="margin-top: 20px; color: #777;">Thank you for being a valued resident of Murandi Apartments.</p>
+      </div>
+    </div>`;
+
+  const mailOptions = {
+    from: `"Murandi Apartments" <${process.env.MAIL_USER}>`,
+    to: email,
+    subject: subject,
+    html: message,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+  } catch (error) {
+    throw error;
+  }
+};
+
 module.exports = {
   sendVerificationEmail,
   verifyVerificationToken,
   resendVerificationEmail,
   sendMaintenanceRequestEmail,
+  sendRentPaymentEmail,
 };

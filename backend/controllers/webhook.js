@@ -39,7 +39,6 @@ const handleWebhook = async (req, res) => {
         if (failedPaymentId) {
           const updateQuery = `UPDATE payment SET paymentstatus = $1 WHERE paymentid = $2`;
           await client.query(updateQuery, ["failed", failedPaymentId]);
-          console.log(`Payment ${failedPaymentId} marked as failed`);
         }
       } catch (error) {
         console.error("Failed to mark payment as failed:", error.message);
@@ -47,7 +46,6 @@ const handleWebhook = async (req, res) => {
       break;
 
     default:
-      console.log(`Unhandled event type: ${event.type}`);
   }
 
   res.status(200).send("Webhook received.");
