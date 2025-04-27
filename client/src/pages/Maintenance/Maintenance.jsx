@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Wrench,
   Send,
@@ -18,35 +18,84 @@ import axios from "axios";
 
 function Maintenance() {
   const [requests, setRequests] = useState([]);
-  const [formData, setFormData] = useState({ title: "", description: "" });
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState("")
+  const [formData, setFormData] = useState({
+    category: "",
+    issueDescription: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [fetchError, setFetchError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [requestsLoading, setRequestsLoading] = useState(false);
 
-const submitMaintenanceRequest = async () => {
-  try {
-    const response = await axios.post()
-  } catch (error) {
-    
-  }
-}
+  const categories = [
+    "Plumbing",
+    "Electrical",
+    "Carpentry",
+    "Pest Control",
+    "Painting",
+    "Internet",
+    "Other",
+    "HVAC",
+  ];
+
+  const submitMaintenanceRequest = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    setSuccess("");
+
+    try {
+      const response = await axios.post(
+        `${endpoint}/maintenance/requests/create`,
+        formData,
+        { withCredentials: true }
+      );
+      setSuccess(response.data.message || "Request submitted successfully.");
+      setFormData({ category: "", issueDescription: "" });
+
+      await fetchRequests(); // <-- re-fetch fresh requests after submitting
+    } catch (error) {
+      console.error("Error submitting request:", error);
+      setError(
+        error.response?.data?.message || "Failed to submit request. Try again."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm({ ...form, [name]: value });
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const newRequest = {
-      id: Date.now(),
-      title: form.title,
-      description: form.description,
-      status: "Pending",
-      date: new Date().toISOString().slice(0, 10),
-    };
-    setRequests([newRequest, ...requests]);
-    setForm({ title: "", description: "" });
+  const fetchRequests = async () => {
+    try {
+      setRequestsLoading(true);
+      const response = await axios.get(
+        `${endpoint}/maintenance/requests/my-requests`,
+        { withCredentials: true }
+      );
+      setRequests(response.data);
+      setFetchError("");
+    } catch (error) {
+      console.error("Error fetching maintenance requests:", error);
+      setFetchError(
+        error.response?.data?.message ||
+          "Failed to fetch maintenance requests. Try again."
+      );
+    } finally {
+      setRequestsLoading(false);
+    }
   };
+
+  useEffect(() => {
+    fetchRequests();
+  }, []);
 
   const getStatusIcon = (status) => {
     if (status === "Pending")
@@ -54,6 +103,35 @@ const submitMaintenanceRequest = async () => {
     if (status === "In Progress")
       return <Loader size={16} className="inline mr-1 animate-spin" />;
     return <CheckCircle size={16} className="inline mr-1 text-green-600" />;
+  };
+
+  const markRequestCompleted = async (request_id) => {
+    console.log(request_id)
+    try {
+      await axios.patch(
+        `${endpoint}/maintenance/requests/complete/${request_id}`,
+        {}, // empty body for PATCH
+        { withCredentials: true }
+      );
+      await fetchRequests();
+      setFetchError("");
+    } catch (error) {
+      console.error("Error marking request as completed:", error);
+      setFetchError(
+        error.response?.data?.message || "Failed to update request status."
+      );
+    }
+  };
+
+  const formatDate = (dateString) => {
+    const options = {
+      weekday: "short",
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    };
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", options);
   };
 
   return (
@@ -68,78 +146,131 @@ const submitMaintenanceRequest = async () => {
           </h2>
 
           <form
-            onSubmit={handleSubmit}
+            onSubmit={submitMaintenanceRequest}
             className="bg-white p-10 rounded-2xl shadow-md mb-8 max-w-xl"
           >
             <h3 className="text-xl font-semibold mb-2 flex items-center gap-2">
-              <PlusCircle size={24} /> Submit a new request.
+              <PlusCircle size={24} /> Submit a new request
             </h3>
+
+            {error && (
+              <div className="bg-red-100 text-red-700 p-3 rounded mb-4">
+                {error}
+              </div>
+            )}
+            {success && (
+              <div className="bg-green-100 text-green-700 p-3 rounded mb-4">
+                {success}
+              </div>
+            )}
+
             <div className="mb-4">
-              <label className="block font-medium text-gray-700">Title</label>
-              <input
-                name="title"
-                value={formData.title}
+              <label className="block font-medium text-gray-700">
+                Category
+              </label>
+              <select
+                name="category"
+                value={formData.category}
                 onChange={handleChange}
-                className="w-full border border-gray-300 px-3 py-3  rounded-md focus:outline-none focus:ring-2 focus:ring-gray-100"
-                placeholder="Short summary (e.g., Leaking sink)"
+                className="w-full border border-gray-300 px-3 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-100"
                 required
-              />
+              >
+                <option value="">Select a category</option>
+                {categories.map((cat) => (
+                  <option key={cat} value={cat}>
+                    {cat}
+                  </option>
+                ))}
+              </select>
             </div>
+
             <div className="mb-4">
               <label className="block font-medium text-gray-700">
                 Description
               </label>
               <textarea
-                name="description"
-                value={formData.description}
+                name="issueDescription"
+                value={formData.issueDescription}
                 onChange={handleChange}
-                className="w-full border border-gray-300 px-3 py-2 rounded-md  focus:outline-none focus:ring-2 focus:ring-gray-100"
+                className="w-full border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-100"
                 rows="4"
                 placeholder="Describe the issue in detail"
                 required
               ></textarea>
             </div>
+
             <button
               type="submit"
-              className="bg-blue-600 text-white px-4 py-3 rounded hover:bg-blue-700 flex items-center gap-2 cursor-pointer"
+              disabled={loading}
+              className="bg-blue-600 text-white px-4 py-3 rounded-md hover:bg-blue-700 flex items-center gap-2 cursor-pointer disabled:bg-gray-400"
             >
-              <Send size={16} /> Submit Request
+              {loading ? (
+                <>
+                  <Spinner /> Submitting...
+                </>
+              ) : (
+                <>
+                  <Send size={16} /> Submit Request
+                </>
+              )}
             </button>
           </form>
 
           <h2 className="text-2xl font-bold mb-4">
             Recent Maintenance Requests
           </h2>
-          <div className="space-y-4">
-            {requests.map((req) => (
-              <div
-                key={req.id}
-                className="bg-white p-4 rounded-2xl shadow-md border-l-4 border-blue-500"
-              >
-                <div className="flex justify-between items-center">
-                  <h3 className="text-lg font-semibold flex items-center gap-2">
-                    <ClipboardEdit size={18} /> {req.title}
-                  </h3>
-                  <span
-                    className={`text-sm px-2 py-1 rounded flex items-center ${
-                      req.status === "Pending"
-                        ? "bg-yellow-100 text-yellow-800"
-                        : req.status === "In Progress"
-                        ? "bg-blue-100 text-blue-800"
-                        : "bg-green-100 text-green-800"
-                    }`}
-                  >
-                    {getStatusIcon(req.status)}
-                    {req.status}
-                  </span>
+
+          {fetchError && (
+            <div className="bg-red-100 text-red-700 p-3 rounded mb-4">
+              {fetchError}
+            </div>
+          )}
+
+          {requestsLoading ? (
+            <div className="flex justify-center items-center p-10">
+              <Spinner />
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {requests.map((req) => (
+                <div
+                  key={req.request_id}
+                  className="bg-white p-4 rounded-2xl shadow-md border-l-4 border-blue-500"
+                >
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-lg font-semibold flex items-center gap-2">
+                      <ClipboardEdit size={18} /> {req.category}
+                    </h3>
+                    <span
+                      className={`text-sm px-2 py-1 rounded flex items-center ${
+                        req.status === "Pending"
+                          ? "bg-yellow-100 text-yellow-800"
+                          : req.status === "In Progress"
+                          ? "bg-blue-100 text-blue-800"
+                          : "bg-green-100 text-green-800"
+                      }`}
+                    >
+                      {getStatusIcon(req.status)}
+                      {req.status}
+                    </span>
+                  </div>
+                  <p className="text-gray-600 mt-1">{req.issue_description}</p>
+                  <p className="text-sm text-gray-500 mt-2 flex items-center gap-1">
+                    <Calendar size={14} /> {formatDate(req.request_date)}
+                  </p>
+
+                  {req.status === "Pending" && (
+                    <button
+                      onClick={() => markRequestCompleted(req.request_id)}
+                      className="mt-3 bg-green-600 text-white px-3 py-2 rounded-full hover:bg-green-700 text-sm"
+                    >
+                      Mark as Completed
+                    </button>
+                  )}
                 </div>
-                <p className="text-gray-600 mt-1">{req.description}</p>
-                <p className="text-sm text-gray-500 mt-2 flex items-center gap-1">
-                  <Calendar size={14} /> {req.date}
-                </p>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </main>
       </div>
 

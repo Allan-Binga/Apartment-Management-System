@@ -78,6 +78,17 @@ function Payments() {
     });
   };
 
+  const getNextPaymentDate = (lastPaymentDate) => {
+    const paymentDate = new Date(lastPaymentDate);
+    paymentDate.setDate(paymentDate.getDate() + 30);
+    return paymentDate.toLocaleDateString("en-US", {
+      weekday: "short",
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar className="z-10" />
@@ -94,7 +105,12 @@ function Payments() {
                     <h2 className="text-xl font-semibold">Rent Payment</h2>
                     <div className="flex items-center text-md text-gray-500 gap-1">
                       <CalendarDays className="w-4 h-4" />
-                      <span>Next payment due: May 1, 2025</span>
+                      <span>
+                        Next payment due:{" "}
+                        {payments.length > 0
+                          ? getNextPaymentDate(payments[0].paymentdate)
+                          : "No payment yet"}
+                      </span>
                     </div>
                   </div>
                 </div>

@@ -141,4 +141,39 @@ const resendVerificationEmail = async (req, res) => {
   }
 };
 
-module.exports = { sendVerificationEmail, verifyVerificationToken, resendVerificationEmail };
+//Send Maintenance Request Email
+const sendMaintenanceRequestEmail = async (email, request) => {
+  const subject = "Maintenance Request Received";
+
+  const message = `
+    <div style="font-family: Arial, sans-serif; text-align: center; padding: 20px; background-color: #f4f4f4;">
+      <div style="max-width: 600px; margin: auto; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+        <h2 style="color: #333;">Maintenance Request Received</h2>
+        <p style="color: #555;">Dear Tenant,</p>
+        <p style="color: #555;">We have received your maintenance request regarding <strong>${request.category}</strong>.</p>
+        <p style="color: #555;">Technician <strong>${request.technician_name}</strong> has been assigned to assist you shortly.</p>
+        <p style="margin-top: 20px; color: #777;">Thank you for choosing Murandi Apartments.</p>
+      </div>
+    </div>
+  `;
+
+  const mailOptions = {
+    from: `"Murandi Apartments" <${process.env.MAIL_USER}>`,
+    to: email,
+    subject: subject,
+    html: message,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+  } catch (error) {
+    throw error;
+  }
+};
+
+module.exports = {
+  sendVerificationEmail,
+  verifyVerificationToken,
+  resendVerificationEmail,
+  sendMaintenanceRequestEmail,
+};

@@ -1,4 +1,5 @@
 const client = require("../config/db");
+const { sendMaintenanceRequestEmail } = require("../controllers/emailService");
 
 //Get all maintenance requests.
 const getRequests = async (req, res) => {
@@ -67,7 +68,7 @@ const createRequest = async (req, res) => {
 
     // Step 2: Find a technician that matches the category
     const techResult = await client.query(
-      `SELECT id FROM technicians WHERE specialty = $1 ORDER BY RANDOM() LIMIT 1`,
+      `SELECT id, full_name FROM technicians WHERE specialty = $1 ORDER BY RANDOM() LIMIT 1`,
       [category]
     );
 
@@ -80,7 +81,26 @@ const createRequest = async (req, res) => {
 
         [technician.id, request.request_id]
       );
-      request.technician_id = technician.id; // optional, to show in response
+      request.technician_name = technician.full_name;
+      delete request.technician_id;
+    }
+
+    const tenantResult = await client.query(
+      `SELECT email FROM tenants WHERE id = $1`,
+      [tenantId]
+    );
+    const tenant = tenantResult.rows[0];
+
+    if (tenant && tenant.email) {
+      //  Step 5: Wiat two minutes and send a maintenance request email
+      setTimeout(async () => {
+        try {
+          await sendMaintenanceRequestEmail(tenant.email, request);
+          console.log("Maintenance email sent after 2 minutes");
+        } catch (error) {
+          console.error("Failed to send maintenance email:", error);
+        }
+      }, 2 * 60 * 1000);
     }
 
     res.status(201).json({
