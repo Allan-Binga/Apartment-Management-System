@@ -17,6 +17,7 @@ import Notifications from "./pages/Notifications/Notifications";
 import LandlordHome from "./pages/Landlord/Home";
 import SuccessPage from "./pages/Success/Success";
 import CancelPage from "./pages/Cancel/Cancel";
+import Listings from "./pages/Landlord/Listings";
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/home/landlord" element={<LandlordHome />} />
+        <Route path="/listings" element={<Listings/>}/>
         <Route path="/payment/success" element={<SuccessPage />} />
         <Route path="/payment/cancelled" element={<CancelPage />} />
       </Routes>

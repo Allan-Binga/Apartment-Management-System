@@ -6,7 +6,7 @@ import { ToastContainer, toast, Bounce } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Spinner from "../../components/Spinner";
 import { endpoint } from "../../apiEndpoint";
-import { UserRoundCog, House, Wrench, Wallet2, ScrollText, Newspaper } from "lucide-react";
+import { UserRoundCog, House, Wrench, Wallet2, Newspaper } from "lucide-react";
 
 function LandlordSidebar() {
   const [firstName, setFirstName] = useState("");
@@ -78,13 +78,27 @@ function LandlordSidebar() {
             <a
               href="/listings"
               className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
-                location.pathname === "/payments"
+                location.pathname === "/listings"
                   ? "bg-blue-100"
                   : "hover:bg-blue-100"
               }`}
             >
               <House className="w-6 h-6" />
               <span>Listings</span>
+            </a>
+          </li>
+          {/*Payments*/}
+          <li>
+            <a
+              href="/landlord/payments"
+              className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                location.pathname === "/landlord/payments"
+                  ? "bg-blue-100"
+                  : "hover:bg-blue-100"
+              }`}
+            >
+              <Wallet2 className="w-6 h-6" />
+              <span>Payments</span>
             </a>
           </li>
           {/*Maintenance Requests*/}
@@ -102,27 +116,12 @@ function LandlordSidebar() {
             </a>
           </li>
 
-          {/*Payments*/}
-          <li>
-            <a
-              href="/maintenance-requests"
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
-                location.pathname === "/maintenance-requests"
-                  ? "bg-blue-100"
-                  : "hover:bg-blue-100"
-              }`}
-            >
-              <Wallet2 className="w-6 h-6" />
-              <span>Payments</span>
-            </a>
-          </li>
-
           {/*Reports*/}
           <li>
             <a
               href="/reports"
               className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
-                location.pathname === "/maintenance-requests"
+                location.pathname === "/reports"
                   ? "bg-blue-100"
                   : "hover:bg-blue-100"
               }`}

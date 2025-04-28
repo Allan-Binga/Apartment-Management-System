@@ -43,7 +43,7 @@ const getUserLeasedApartment = async (req, res) => {
 // Create Apartment Listings
 const createListing = async (req, res) => {
   try {
-    const { title, description, price, square_feet, image, apartmentNumber } =
+    const { title, description, price, square_feet, image, apartmentnumber } =
       req.body;
 
     // Validate input
@@ -53,7 +53,7 @@ const createListing = async (req, res) => {
       !price ||
       !square_feet ||
       !image ||
-      !apartmentNumber
+      !apartmentnumber
     ) {
       return res.status(400).json({
         message: "All fields are required.",
@@ -67,12 +67,12 @@ const createListing = async (req, res) => {
         price,
         square_feet,
         image,
-        apartmentNumber,
+        apartmentnumber,
         created_at,
         updated_at
       )
       VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())
-      RETURNING id, title, description, price, square_feet, image, apartmentNumber, created_at, updated_at
+      RETURNING id, title, description, price, square_feet, image, apartmentnumber, created_at, updated_at
     `;
 
     const result = await client.query(insertListingQuery, [
@@ -81,7 +81,7 @@ const createListing = async (req, res) => {
       price,
       square_feet,
       image,
-      apartmentNumber,
+      apartmentnumber,
     ]);
 
     res.status(201).json({
