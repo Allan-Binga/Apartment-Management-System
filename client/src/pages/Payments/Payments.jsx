@@ -60,11 +60,19 @@ function Payments() {
       const { url } = response.data;
       window.location.href = url;
     } catch (error) {
-      console.error("Error creating checkout session", error);
+      console.error(error); // Optional: for your console logs
+      toast.error(
+        error?.response?.data?.message || "Error creating checkout session."
+      );
     } finally {
       setLoadingCheckout(false);
     }
   };
+
+  const hasRecentPayment =
+    payments.length > 0 &&
+    new Date(payments[0].paymentdate) >
+      new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
   const handleSubmitMpesa = () => {
     // console.log("Phone:", phoneNumber);
@@ -120,7 +128,12 @@ function Payments() {
                 </div>
                 <button
                   onClick={() => setIsModalOpen(true)}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 transition flex items-center gap-2 cursor-pointer"
+                  className={`px-4 py-2 rounded-xl flex items-center gap-2 cursor-pointer ${
+                    hasRecentPayment
+                      ? "bg-gray-300 text-white cursor-not-allowed"
+                      : "bg-blue-600 text-white hover:bg-blue-700"
+                  }`}
+                  disabled={hasRecentPayment}
                 >
                   <CreditCard className="w-4 h-4" />
                   Pay Rent
