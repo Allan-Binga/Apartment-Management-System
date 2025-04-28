@@ -62,7 +62,7 @@ function TenantRegister() {
     >
       <ToastContainer
         position="top-right"
-        autoClose={5000}
+        autoClose={3500}
         hideProgressBar={false}
         newestOnTop={false}
         closeOnClick={false}
@@ -120,7 +120,7 @@ function TenantRegister() {
               toast.success(data.message);
               setTimeout(() => {
                 navigate("/login/tenant");
-              }, 5000);
+              }, 3500);
             } catch (err) {
               toast.error(err.message);
             } finally {

@@ -12,6 +12,7 @@ const checkoutRoute = require("./routes/rentCheckout");
 const webhookRoute = require("./routes/webhook");
 const emailRoute = require("./routes/emailService");
 const tenantRoute = require("./routes/tenants");
+const reportRoute = require("./routes/reports");
 
 require("./config/db");
 
@@ -38,6 +39,7 @@ app.use("/murandi/v1/listings", listingsRoute);
 app.use("/murandi/v1/payments", paymentRoute);
 app.use("/murandi/v1/maintenance", maintenanceRequestRoute);
 app.use("/murandi/v1/checkout", checkoutRoute);
+app.use("/murandi/v1/reports", reportRoute)
 
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "client", "dist")));

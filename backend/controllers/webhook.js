@@ -1,10 +1,12 @@
 const Stripe = require("stripe");
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const client = require("../config/db");
+const { createPaymentReport } = require("../controllers/reports");
 
 const handleWebhook = async (req, res) => {
   const endpointSecret = process.env.STRIPE_WEBHOOK;
   const sig = req.headers["stripe-signature"];
+  
 
   let event;
 
@@ -19,17 +21,53 @@ const handleWebhook = async (req, res) => {
     case "checkout.session.completed":
       const session = event.data.object;
       const paymentId = session.metadata?.paymentId;
+      const tenantId = session.metadata.tenantId
+      console.log(tenantId)
 
       try {
-        if (paymentId) {
-          const updateQuery = `UPDATE payment SET paymentstatus = $1 WHERE paymentid = $2`;
-          await client.query(updateQuery, ["paid", paymentId]);
-          console.log(`Payment ${paymentId} marked as paid`);
+        if (!paymentId) {
+          throw new Error("Payment ID not found in session metadata");
         }
+
+        // Update payment status
+        const updateQuery = `UPDATE payment SET paymentstatus = $1 WHERE paymentid = $2`;
+        await client.query(updateQuery, ["paid", paymentId]);
+        console.log(`Payment ${paymentId} marked as paid`);
+
+        // Fetch tenant details
+        const tenantQuery = `SELECT firstname, lastname, apartmentnumber, email FROM tenants WHERE id = $1`;
+        const tenantResult = await client.query(tenantQuery, [tenantId]);
+
+        if (tenantResult.rows.length === 0) {
+          throw new Error("Tenant not found");
+        }
+
+        const {
+          firstname,
+          lastname,
+          apartmentnumber: apartmentNumber,
+          email: tenantEmail,
+        } = tenantResult.rows[0];
+        const fullName = `${firstname} ${lastname}`;
+
+        // Prepare payment report data
+        const paymentReportData = {
+          tenant_name: fullName,
+          apartment_id: apartmentNumber,
+          amount_paid: session.amount_total / 100, // Convert from cents to dollars
+          payment_date: new Date().toISOString().split("T")[0], // Today's date
+          payment_status: "paid",
+        };
+
+        // Create the payment report
+        await createPaymentReport(paymentReportData);
+        console.log(`Payment report created for tenant ${fullName}`);
+
+        return res.status(200).send("Webhook received and processed.");
       } catch (error) {
-        console.error("Failed to mark payment as paid:", error.message);
+        console.error("Error processing webhook:", error.message);
+        return res.status(500).send("Internal server error.");
       }
-      break;
 
     case "payment_intent.payment_failed":
       const failedIntent = event.data.object;
@@ -39,16 +77,18 @@ const handleWebhook = async (req, res) => {
         if (failedPaymentId) {
           const updateQuery = `UPDATE payment SET paymentstatus = $1 WHERE paymentid = $2`;
           await client.query(updateQuery, ["failed", failedPaymentId]);
+          console.log(`Payment ${failedPaymentId} marked as failed`);
         }
+        return res.status(200).send("Webhook received and processed.");
       } catch (error) {
         console.error("Failed to mark payment as failed:", error.message);
+        return res.status(500).send("Internal server error.");
       }
-      break;
 
     default:
+      console.log(`Unhandled event type: ${event.type}`);
+      return res.status(200).send("Webhook received.");
   }
-
-  res.status(200).send("Webhook received.");
 };
 
 const handleMpesaCallback = async (req, res) => {
