@@ -105,10 +105,12 @@ function Payments() {
     <div className="flex flex-col min-h-screen">
       <Navbar className="z-10" />
       <div className="flex flex-1">
-        <SideBar />
+        <div className="hidden md:block">
+          <SideBar />
+        </div>
 
-        <main className="flex-1 p-6 bg-gray-50">
-          <div className="max-w-4xl mx-auto space-y-8">
+        <main className="flex-1 p-4 md:pl-80 bg-gray-50">
+          <div className="max-w-full sm:max-w-3xl md:max-w-4xl mx-auto space-y-6 sm:space-y-8">
             <section className="bg-white p-10 rounded-2xl shadow-sm">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -141,13 +143,15 @@ function Payments() {
               </div>
             </section>
 
-            <section className="bg-white p-10 rounded-2xl shadow-sm">
+            <section className="bg-white p-6 sm:p-8 md:p-10 rounded-2xl shadow-sm">
               <div className="flex items-center gap-2 mb-4">
                 <History className="w-5 h-5 text-gray-600" />
-                <h3 className="text-lg font-semibold">Recent Payments</h3>
+                <h3 className="text-base sm:text-lg font-semibold">
+                  Recent Payments
+                </h3>
               </div>
               <div className="overflow-x-auto">
-                <table className="min-w-full text-sm text-left text-gray-600">
+                <table className="min-w-full text-sm text-left text-gray-600 hidden sm:table">
                   <thead className="text-xs uppercase bg-gray-100 text-gray-500">
                     <tr>
                       <th className="px-4 py-2">Date</th>
@@ -190,6 +194,40 @@ function Payments() {
                     )}
                   </tbody>
                 </table>
+                {/* Mobile card layout */}
+                <div className="sm:hidden space-y-4">
+                  {loading ? (
+                    <div className="text-center">
+                      <Spinner className="scale-50" />
+                    </div>
+                  ) : payments.length > 0 ? (
+                    payments.map((payment, index) => (
+                      <div
+                        key={index}
+                        className="p-4 bg-gray-50 rounded-lg border border-gray-200"
+                      >
+                        <p className="text-sm text-gray-600">
+                          <span className="font-medium">Date:</span>{" "}
+                          {formatDate(payment.paymentdate)}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          <span className="font-medium">Amount:</span>{" "}
+                          {payment.amountpaid}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          <span className="font-medium">Status:</span>{" "}
+                          <span className="bg-green-100 text-green-600 px-2 py-1 rounded-full text-xs">
+                            {payment.paymentstatus}
+                          </span>
+                        </p>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-center text-gray-500 italic">
+                      No payments found.
+                    </p>
+                  )}
+                </div>
               </div>
             </section>
           </div>
@@ -200,41 +238,43 @@ function Payments() {
       {/* Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 backdrop-blur-sm bg-white/30 flex items-center justify-center z-50">
-          <div className="bg-white w-full max-w-md p-6 rounded-2xl shadow-lg relative">
+          <div className="bg-white w-full max-w-[90%] sm:max-w-md p-4 sm:p-6 rounded-2xl shadow-lg relative">
             <button
-              className="absolute top-3 right-3 text-gray-500 hover:text-red-500 cursor-pointer"
+              className="absolute top-2 right-2 sm:top-3 sm:right-3 text-gray-500 hover:text-red-500 cursor-pointer"
               onClick={() => setIsModalOpen(false)}
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
-
-            <h2 className="text-xl font-semibold mb-4">
+            <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">
               Choose Payment Method
             </h2>
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               <button
                 onClick={handleCheckout}
-                className="w-full flex items-center gap-3 bg-purple-900 text-white py-6 px-4 rounded-xl hover:bg-purple-700 transition cursor-pointer"
+                className="w-full flex items-center gap-2 sm:gap-3 bg-purple-900 text-white py-4 sm:py-6 px-3 sm:px-4 rounded-xl hover:bg-purple-700 transition cursor-pointer"
               >
                 <img
                   src={StripeLogo}
                   alt="Stripe"
-                  className="h-12 w-18 rounded-sm"
+                  className="h-8 w-12 sm:h-12 sm:w-18 rounded-sm"
                 />
-                <span className="flex-1 text-left">Pay with Stripe</span>
+                <span className="flex-1 text-left text-sm sm:text-base">
+                  Pay with Stripe
+                </span>
                 {loadingCheckout && <Spinner />}
               </button>
-
               <button
                 onClick={handleMpesaClick}
-                className="w-full flex items-center gap-3 bg-green-600 text-white py-6 px-4 rounded-xl hover:bg-green-700 transition cursor-pointer"
+                className="w-full flex items-center gap-2 sm:gap-3 bg-green-600 text-white py-4 sm:py-6 px-3 sm:px-4 rounded-xl hover:bg-green-700 transition cursor-pointer"
               >
                 <img
                   src={MpesaLogo}
                   alt="M-Pesa"
-                  className="h-12 w-18 rounded-sm"
+                  className="h-8 w-12 sm:h-12 sm:w-18 rounded-sm"
                 />
-                <span className="flex-1 text-left">Pay with M-Pesa</span>
+                <span className="flex-1 text-left text-sm sm:text-base">
+                  Pay with M-Pesa
+                </span>
               </button>
             </div>
           </div>
@@ -244,8 +284,8 @@ function Payments() {
       {/* === M-Pesa Phone Number Modal === */}
       {showMpesaModal && (
         <div className="fixed inset-0 backdrop-blur-sm bg-white/30 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-xl shadow-lg max-w-sm w-full">
-            <h2 className="text-xl font-semibold mb-4 text-center">
+          <div className="bg-white p-4 sm:p-6 rounded-xl shadow-lg max-w-[90%] sm:max-w-sm w-full">
+            <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-center">
               Please enter your valid M-pesa number.
             </h2>
             <input
@@ -253,18 +293,17 @@ function Payments() {
               placeholder="07XXXXXXXX"
               value={phoneNumber}
               onChange={(e) => setPhoneNumber(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md mb-4 focus:outline-none focus:border-gray-400"
+              className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-md mb-3 sm:mb-4 focus:outline-none focus:border-gray-400 text-sm sm:text-base"
             />
-
             <div className="flex justify-between">
               <button
-                className="bg-gray-300 text-black px-4 py-2 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-200"
+                className="bg-gray-300 text-black px-3 sm:px-4 py-2 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-200 text-sm sm:text-base"
                 onClick={() => setShowMpesaModal(false)}
               >
                 Cancel
               </button>
               <button
-                className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
+                className="bg-green-600 text-white px-3 sm:px-4 py-2 rounded-md hover:bg-green-700 text-sm sm:text-base"
                 onClick={handleSubmitMpesa}
               >
                 Submit

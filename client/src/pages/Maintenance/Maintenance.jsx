@@ -27,6 +27,7 @@ function Maintenance() {
   const [fetchError, setFetchError] = useState("");
   const [success, setSuccess] = useState("");
   const [requestsLoading, setRequestsLoading] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const categories = [
     "Plumbing",
@@ -106,7 +107,7 @@ function Maintenance() {
   };
 
   const markRequestCompleted = async (request_id) => {
-    console.log(request_id)
+    console.log(request_id);
     try {
       await axios.patch(
         `${endpoint}/maintenance/requests/complete/${request_id}`,
@@ -136,43 +137,48 @@ function Maintenance() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Navbar className="z-10" />
+      <Navbar
+        className="z-10 w-full"
+        sidebarOpen={sidebarOpen}
+        setSidebarOpen={setSidebarOpen}
+      />
 
-      <div className="flex flex-1 bg-gray-50">
-        <SideBar />
-        <main className="flex-1 ml-[calc(18rem+2rem)] p-6">
-          <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
-            <Wrench size={30} /> Maintenance Requests
+      <div className="flex flex-1 bg-gray-50 w-full">
+        <SideBar/>
+        <main className="flex-1 p-4 sm:p-6 md:ml-[calc(18rem+2rem)]">
+          <h2 className="text-xl sm:text-2xl font-semibold mb-4 flex items-center gap-2">
+            <Wrench className="w-6 h-6 sm:w-7 sm:h-7" /> Maintenance Requests
           </h2>
 
           <form
             onSubmit={submitMaintenanceRequest}
-            className="bg-white p-10 rounded-2xl shadow-md mb-8 max-w-xl"
+            className="bg-white p-6 sm:p-8 md:p-10 rounded-2xl shadow-md mb-6 sm:mb-8 max-w-full sm:max-w-xl"
           >
-            <h3 className="text-xl font-semibold mb-2 flex items-center gap-2">
-              <PlusCircle size={24} /> Submit a new request
+            <h3 className="text-lg sm:text-xl font-semibold mb-2 flex items-center gap-2">
+              <PlusCircle className="w-5 h-5 sm:w-6 sm:h-6" /> Submit a new
+              request
             </h3>
 
             {error && (
-              <div className="bg-red-100 text-red-700 p-3 rounded mb-4">
+              <div className="bg-red-100 text-red-700 p-3 rounded mb-4 text-sm sm:text-base">
                 {error}
               </div>
             )}
             {success && (
-              <div className="bg-green-100 text-green-700 p-3 rounded mb-4">
+              <div className="bg-green-100 text-green-700 p-3 rounded mb-4 text-sm sm:text-base">
                 {success}
               </div>
             )}
 
             <div className="mb-4">
-              <label className="block font-medium text-gray-700">
+              <label className="block font-medium text-gray-700 text-sm sm:text-base">
                 Category
               </label>
               <select
                 name="category"
                 value={formData.category}
                 onChange={handleChange}
-                className="w-full border border-gray-300 px-3 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-100"
+                className="w-full border border-gray-300 px-3 py-2 sm:py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-100 text-sm sm:text-base"
                 required
               >
                 <option value="">Select a category</option>
@@ -185,14 +191,14 @@ function Maintenance() {
             </div>
 
             <div className="mb-4">
-              <label className="block font-medium text-gray-700">
+              <label className="block font-medium text-gray-700 text-sm sm:text-base">
                 Description
               </label>
               <textarea
                 name="issueDescription"
                 value={formData.issueDescription}
                 onChange={handleChange}
-                className="w-full border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-100"
+                className="w-full border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-100 text-sm sm:text-base"
                 rows="4"
                 placeholder="Describe the issue in detail"
                 required
@@ -202,47 +208,48 @@ function Maintenance() {
             <button
               type="submit"
               disabled={loading}
-              className="bg-blue-600 text-white px-4 py-3 rounded-md hover:bg-blue-700 flex items-center gap-2 cursor-pointer disabled:bg-gray-400"
+              className="bg-blue-600 text-white px-3 sm:px-4 py-2 sm:py-3 rounded-md hover:bg-blue-700 flex items-center gap-2 cursor-pointer disabled:bg-gray-400 text-sm sm:text-base"
             >
               {loading ? (
                 <>
-                  <Spinner /> Submitting...
+                  <Spinner className="w-4 h-4 sm:w-5 sm:h-5" /> Submitting...
                 </>
               ) : (
                 <>
-                  <Send size={16} /> Submit Request
+                  <Send className="w-4 h-4 sm:w-5 sm:h-5" /> Submit Request
                 </>
               )}
             </button>
           </form>
 
-          <h2 className="text-2xl font-bold mb-4">
+          <h2 className="text-xl sm:text-2xl font-bold mb-4">
             Recent Maintenance Requests
           </h2>
 
           {fetchError && (
-            <div className="bg-red-100 text-red-700 p-3 rounded mb-4">
+            <div className="bg-red-100 text-red-700 p-3 rounded mb-4 text-sm sm:text-base">
               {fetchError}
             </div>
           )}
 
           {requestsLoading ? (
-            <div className="flex justify-center items-center p-10">
-              <Spinner />
+            <div className="flex justify-center items-center p-6 sm:p-10">
+              <Spinner className="w-8 h-8 sm:w-10 sm:h-10" />
             </div>
           ) : (
             <div className="space-y-4">
               {requests.map((req) => (
                 <div
                   key={req.request_id}
-                  className="bg-white p-4 rounded-2xl shadow-md border-l-4 border-blue-500"
+                  className="bg-white p-4 sm:p-6 rounded-2xl shadow-md border-l-4 border-blue-500"
                 >
-                  <div className="flex justify-between items-center">
-                    <h3 className="text-lg font-semibold flex items-center gap-2">
-                      <ClipboardEdit size={18} /> {req.category}
+                  <div className="flex justify-between items-center flex-col sm:flex-row gap-3 sm:gap-0">
+                    <h3 className="text-base sm:text-lg font-semibold flex items-center gap-2">
+                      <ClipboardEdit className="w-4 h-4 sm:w-5 sm:h-5" />{" "}
+                      {req.category}
                     </h3>
                     <span
-                      className={`text-sm px-2 py-1 rounded flex items-center ${
+                      className={`text-xs sm:text-sm px-2 py-1 rounded flex items-center ${
                         req.status === "Pending"
                           ? "bg-yellow-100 text-yellow-800"
                           : req.status === "In Progress"
@@ -254,15 +261,18 @@ function Maintenance() {
                       {req.status}
                     </span>
                   </div>
-                  <p className="text-gray-600 mt-1">{req.issue_description}</p>
-                  <p className="text-sm text-gray-500 mt-2 flex items-center gap-1">
-                    <Calendar size={14} /> {formatDate(req.request_date)}
+                  <p className="text-gray-600 mt-2 text-sm sm:text-base line-clamp-3">
+                    {req.issue_description}
+                  </p>
+                  <p className="text-xs sm:text-sm text-gray-500 mt-2 flex items-center gap-1">
+                    <Calendar className="w-3 h-3 sm:w-4 sm:h-4" />{" "}
+                    {formatDate(req.request_date)}
                   </p>
 
                   {req.status === "Pending" && (
                     <button
                       onClick={() => markRequestCompleted(req.request_id)}
-                      className="mt-3 bg-green-600 text-white px-3 py-2 rounded-full hover:bg-green-700 text-sm"
+                      className="mt-3 bg-green-600 text-white px-3 sm:px-4 py-1 sm:py-2 rounded-full hover:bg-green-700 text-xs sm:text-sm"
                     >
                       Mark as Completed
                     </button>
