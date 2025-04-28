@@ -2,11 +2,11 @@ const Stripe = require("stripe");
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const client = require("../config/db");
 const { createPaymentReport } = require("../controllers/reports");
+const { sendRentPaymentEmail } = require("../controllers/emailService");
 
 const handleWebhook = async (req, res) => {
   const endpointSecret = process.env.STRIPE_WEBHOOK;
   const sig = req.headers["stripe-signature"];
-  
 
   let event;
 
@@ -21,8 +21,8 @@ const handleWebhook = async (req, res) => {
     case "checkout.session.completed":
       const session = event.data.object;
       const paymentId = session.metadata?.paymentId;
-      const tenantId = session.metadata.tenantId
-      console.log(tenantId)
+      const tenantId = session.metadata.tenantId;
+      console.log(tenantId);
 
       try {
         if (!paymentId) {
@@ -50,12 +50,23 @@ const handleWebhook = async (req, res) => {
         } = tenantResult.rows[0];
         const fullName = `${firstname} ${lastname}`;
 
+        // Get the current date for payment date
+        const paymentDate = new Date().toISOString().split("T")[0];
+
+        // Send the rent payment confirmation email
+        await sendRentPaymentEmail(tenantEmail, {
+          amountPaid: session.amount_total / 100, // Convert from cents to KES
+          apartmentNumber,
+          paymentDate,
+        });
+        // console.log(`Rent payment confirmation email sent to ${tenantEmail}`);
+
         // Prepare payment report data
         const paymentReportData = {
           tenant_name: fullName,
           apartment_id: apartmentNumber,
           amount_paid: session.amount_total / 100, // Convert from cents to dollars
-          payment_date: new Date().toISOString().split("T")[0], // Today's date
+          payment_date: paymentDate,
           payment_status: "paid",
         };
 

@@ -1,5 +1,6 @@
 const client = require("../config/db");
 const { sendMaintenanceRequestEmail } = require("../controllers/emailService");
+const { createMaintenanceReport } = require("../controllers/reports");
 
 //Get all maintenance requests.
 const getRequests = async (req, res) => {
@@ -133,13 +134,64 @@ const completeRequest = async (req, res) => {
       return res.status(404).json({ message: "Request not found." });
     }
 
+    const request = result.rows[0];
+
+    // Fetch tenant details for the report
+    const tenantQuery = `
+      SELECT firstname, lastname, apartmentnumber 
+      FROM tenants 
+      WHERE id = $1;
+    `;
+    const tenantResult = await client.query(tenantQuery, [request.tenant_id]);
+
+    if (tenantResult.rows.length === 0) {
+      console.warn(`Tenant not found for tenant_id: ${request.tenant_id}`);
+      // Optionally skip report creation or use placeholder data
+      return res.status(200).json({
+        message: "Request marked as completed, but no tenant found for report.",
+        request: request,
+      });
+    }
+
+    const {
+      firstname,
+      lastname,
+      apartmentnumber: apartmentId,
+    } = tenantResult.rows[0];
+    const tenantName = `${firstname} ${lastname}`;
+
+    // Prepare maintenance report data
+    const maintenanceReportData = {
+      tenant_name: tenantName,
+      apartment_id: apartmentId,
+      issue_description: request.issue_description,
+      category: request.category,
+    };
+
+    // Create the maintenance report
+    const report = await createMaintenanceReport(maintenanceReportData);
+    console.log(`Maintenance report created for request ${requestId}`);
+
+    // Now update the maintenance report with status 'completed'
+    const updateStatusQuery = `
+      UPDATE reports
+      SET maintenance_status = 'Completed'
+      WHERE id = $1;
+    `;
+    await client.query(updateStatusQuery, [report.id]);
+
     res.status(200).json({
-      message: "Request marked as completed.",
-      request: result.rows[0],
+      message: "Request marked as completed and maintenance report created.",
+      request: request,
     });
   } catch (error) {
-    console.error("Error completing request:", error);
-    res.status(500).json({ message: "Failed to update request status." });
+    console.error(
+      "Error completing request or creating report:",
+      error.message
+    );
+    res
+      .status(500)
+      .json({ message: "Failed to update request status or create report." });
   }
 };
 module.exports = {

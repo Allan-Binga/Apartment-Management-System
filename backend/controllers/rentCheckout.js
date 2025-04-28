@@ -3,14 +3,13 @@ const Stripe = require("stripe");
 const client = require("../config/db");
 const moment = require("moment");
 const axios = require("axios");
-const { sendRentPaymentEmail } = require("../controllers/emailService");
 
 dotenv.config();
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 const createRentCheckoutSession = async (req, res) => {
-  const tenantId = req.tenantId 
-  console.log(tenantId)
+  const tenantId = req.tenantId;
+  console.log(tenantId);
 
   try {
     //Find Tenant Apartment's Number
@@ -98,13 +97,6 @@ const createRentCheckoutSession = async (req, res) => {
           tenantId: tenantId.toString(),
         },
       },
-    });
-
-    //Send Rent Confirmation Email
-    await sendRentPaymentEmail(tenantEmail, {
-      amountPaid: rentAmount,
-      apartmentNumber: apartmentNumber,
-      paymentDate: today,
     });
 
     res.status(200).json({ id: session.id, url: session.url });
