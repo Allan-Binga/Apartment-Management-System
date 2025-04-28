@@ -31,7 +31,7 @@ function Navbar({ sidebarOpen = false, setSidebarOpen = () => {} }) {
   const toggleMenu = () => setMenuOpen(!menuOpen);
 
   return (
-    <nav className="w-full flex flex-col sm:flex-row items-center justify-between px-4 sm:px-6 py-4 bg-white shadow-md">
+    <nav className="w-full flex flex-col sm:flex-row items-center justify-between px-4 sm:px-6 py-4 bg-white shadow-sm">
       {/* Left: Hamburger and Empty Header */}
       <div className="flex items-center justify-between w-full sm:w-auto">
         <div className="flex items-center gap-3">
