@@ -140,7 +140,7 @@ const createReceipt = ({ amountPaid, apartmentNumber, paymentDate }) => {
         align: "center",
       });
     doc.text(
-      "For inquiries, contact us at info@murandi.co.ke",
+      "For inquiries, contact us at murandiapartments@gmail.com",
       0,
       footerY + 15,
       { align: "center" }
