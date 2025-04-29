@@ -268,7 +268,7 @@ function TenantRegister() {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full py-3 font-semibold rounded-lg transition duration-200 ${
+            className={`w-full py-3 cursor-pointer font-semibold rounded-lg transition duration-200 ${
               loading ? "bg-gray-400" : "bg-blue-500 hover:bg-blue-700"
             } text-white`}
           >

@@ -73,13 +73,13 @@ function LandlordSidebar() {
         </div>
 
         {/*Navigation*/}
-        <ul className="space-y text-gray-700 text-sm">
+        <ul className="space-y-2 text-gray-700 text-sm">
           <li>
             <a
               href="/listings"
               className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
                 location.pathname === "/listings"
-                  ? "bg-blue-100"
+                  ? "text-blue-500 bg-blue-100"
                   : "hover:bg-blue-100"
               }`}
             >
@@ -93,12 +93,27 @@ function LandlordSidebar() {
               href="/landlord/payments"
               className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
                 location.pathname === "/landlord/payments"
-                  ? "bg-blue-100"
+                  ? "text-blue-500 bg-blue-100"
                   : "hover:bg-blue-100"
               }`}
             >
               <Wallet2 className="w-6 h-6" />
               <span>Payments</span>
+            </a>
+          </li>
+
+          {/*Reports*/}
+          <li>
+            <a
+              href="/landlord/reports"
+              className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                location.pathname === "/landlord/reports"
+                  ? "text-blue-500 bg-blue-100"
+                  : "hover:bg-blue-100"
+              }`}
+            >
+              <Newspaper className="w-6 h-6" />
+              <span>Reports</span>
             </a>
           </li>
           {/*Maintenance Requests*/}
@@ -107,27 +122,12 @@ function LandlordSidebar() {
               href="/maintenance-requests"
               className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
                 location.pathname === "/maintenance-requests"
-                  ? "bg-blue-100"
+                  ? "text-blue-500 bg-blue-100"
                   : "hover:bg-blue-100"
               }`}
             >
               <Wrench className="w-6 h-6" />
               <span>Maintenance Requests</span>
-            </a>
-          </li>
-
-          {/*Reports*/}
-          <li>
-            <a
-              href="/reports"
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
-                location.pathname === "/reports"
-                  ? "bg-blue-100"
-                  : "hover:bg-blue-100"
-              }`}
-            >
-              <Newspaper className="w-6 h-6" />
-              <span>Reports</span>
             </a>
           </li>
         </ul>

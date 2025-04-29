@@ -3,9 +3,25 @@ const client = require("../config/db");
 //Get All Payments
 const getAllPayments = async (req, res) => {
   try {
-    const payments = await client.query("SELECT * FROM payment");
+    const payments = await client.query(`
+      SELECT 
+        p.paymentid,
+         (t.firstname || ' ' || t.lastname) AS tenantname,
+        t.apartmentnumber,
+        p.amountpaid,
+        p.paymentdate,
+        p.paymentmethod,
+        p.paymentstatus
+      FROM 
+        payment p
+      JOIN 
+        tenants t
+      ON 
+        p.tenantid = t.id
+    `);
     res.status(200).json(payments.rows);
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Could not fetch payments." });
   }
 };

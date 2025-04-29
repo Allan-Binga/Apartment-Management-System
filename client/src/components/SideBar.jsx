@@ -6,7 +6,6 @@ import { CreditCard, Wrench, User, LogOut } from "lucide-react";
 import { endpoint } from "../apiEndpoint";
 import { ToastContainer, toast, Bounce } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Spinner from "../components/Spinner"
 
 function SideBar() {
   const [firstName, setFirstName] = useState("");
@@ -74,17 +73,21 @@ function SideBar() {
         </div>
 
         {/* Navigation */}
-        <ul className="space-y-4 text-gray-700 text-sm">
+        <ul className="space-y-2 text-gray-700 text-sm">
           <li>
             <a
               href="/payments"
               className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
                 location.pathname === "/payments"
-                  ? "bg-blue-100"
+                  ? "text-blue-500 bg-blue-100"
                   : "hover:bg-blue-100"
               }`}
             >
-              <CreditCard className="w-6 h-6" />
+              <CreditCard
+                className={`w-6 h-6 ${
+                  location.pathname === "/payments" ? "text-blue-500 bg-blue-100" : ""
+                }`}
+              />
               <span>Rent Payments</span>
             </a>
           </li>
@@ -93,11 +96,17 @@ function SideBar() {
               href="/maintenance-requests"
               className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
                 location.pathname === "/maintenance-requests"
-                  ? "bg-blue-100"
+                  ? "text-blue-500 bg-blue-100"
                   : "hover:bg-blue-100"
               }`}
             >
-              <Wrench className="w-6 h-6" />
+              <Wrench
+                className={`w-6 h-6 ${
+                  location.pathname === "/maintenance-requests"
+                    ? "text-blue-500"
+                    : ""
+                }`}
+              />
               <span>Maintenance Requests</span>
             </a>
           </li>
@@ -106,16 +115,23 @@ function SideBar() {
               href="/profile"
               className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
                 location.pathname === "/profile"
-                  ? "bg-blue-100"
+                  ? "text-blue-500 bg-blue-100"
                   : "hover:bg-blue-100"
               }`}
             >
-              <User className="w-6 h-6" />
+              <User
+                className={`w-6 h-6 ${
+                  location.pathname === "/profile" ? "text-blue-500" : ""
+                }`}
+              />
               <span>Profile</span>
             </a>
           </li>
           <li>
-            <a className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-red-200 transition-colors cursor-pointer">
+            <a
+              onClick={handleLogout}
+              className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-red-200 transition-colors cursor-pointer"
+            >
               <LogOut className="w-6 h-6" />
               <span>Logout</span>
             </a>
