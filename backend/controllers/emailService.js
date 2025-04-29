@@ -2,6 +2,10 @@ const nodemailer = require("nodemailer");
 const client = require("../config/db");
 const crypto = require("crypto");
 const dotenv = require("dotenv");
+const PDFDocument = require("pdfkit");
+const fs = require("fs");
+const path = require("path");
+// const { content } = require("pdfkit/js/page");
 
 dotenv.config();
 
@@ -12,6 +16,139 @@ const transporter = nodemailer.createTransport({
     pass: process.env.MAIL_PASS,
   },
 });
+
+// GENERATE PDF DOCUMENTS
+const createReceipt = ({ amountPaid, apartmentNumber, paymentDate }) => {
+  return new Promise((resolve, reject) => {
+    const doc = new PDFDocument({
+      size: "A4",
+      margin: 50,
+    });
+
+    const buffers = [];
+    doc.on("data", buffers.push.bind(buffers));
+    doc.on("end", () => {
+      const pdfData = Buffer.concat(buffers);
+      resolve(pdfData);
+    });
+    doc.on("error", reject);
+
+    const logoPath = path.join(__dirname, "../assets/logo.png");
+    if (fs.existsSync(logoPath)) {
+      doc.image(logoPath, 50, 30, { width: 80 });
+    }
+
+    // Adjusted values to center text relative to remaining space after logo
+    const contentWidth = 595.28 - 2 * 50; // A4 page width minus margins
+    const headerX = 150;
+    const headerWidth = contentWidth - 100;
+
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(20)
+      .fillColor("#003087")
+      .text("Murandi Apartments", headerX, 30, {
+        width: headerWidth,
+        align: "center",
+      });
+
+    doc
+      .font("Helvetica")
+      .fontSize(10)
+      .fillColor("#333333")
+      .text("165 Meadow Lane, Ongata Rongai", headerX, 55, {
+        width: headerWidth,
+        align: "center",
+      });
+
+    doc.text(
+      "Phone: +254 702485856 | Email: murandiapartments@gmail.com",
+      headerX,
+      70,
+      {
+        width: headerWidth,
+        align: "center",
+      }
+    );
+
+    // Title
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(16)
+      .fillColor("#003087")
+      .text("Your receipt for", 0, 120, { align: "center" });
+
+    doc.moveDown(2);
+
+    // Table-like section
+    const tableTop = 160;
+    const tableLeft = 50;
+    const tableWidth = 500;
+    const rowHeight = 30;
+
+    doc
+      .rect(tableLeft, tableTop, tableWidth, rowHeight)
+      .fill("#f5f5f5")
+      .stroke("#dddddd");
+
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(12)
+      .fillColor("#333333")
+      .text("Description", tableLeft + 10, tableTop + 10)
+      .text("Details", tableLeft + 300, tableTop + 10);
+
+    doc
+      .rect(tableLeft, tableTop + rowHeight, tableWidth, rowHeight * 3)
+      .fill("#ffffff")
+      .stroke("#dddddd");
+
+    doc
+      .font("Helvetica")
+      .fontSize(11)
+      .fillColor("#333333")
+      .text("Date", tableLeft + 10, tableTop + rowHeight + 10)
+      .text(paymentDate, tableLeft + 300, tableTop + rowHeight + 10)
+      .text("Apartment Number", tableLeft + 10, tableTop + rowHeight * 2 + 10)
+      .text(apartmentNumber, tableLeft + 300, tableTop + rowHeight * 2 + 10)
+      .text("Amount Paid", tableLeft + 10, tableTop + rowHeight * 3 + 10)
+      .text(
+        `KES ${amountPaid.toLocaleString()}`,
+        tableLeft + 300,
+        tableTop + rowHeight * 3 + 10
+      );
+
+    doc.rect(tableLeft, tableTop, tableWidth, rowHeight * 4).stroke("#dddddd");
+
+    doc
+      .font("Helvetica")
+      .fontSize(12)
+      .fillColor("#333333")
+      .text(
+        "Thank you for trusting Murandi Apartments.",
+        0,
+        tableTop + rowHeight * 5,
+        { align: "center" }
+      );
+
+    const footerY = doc.page.height - 80;
+    doc
+      .font("Helvetica")
+      .fontSize(9)
+      .fillColor("#666666")
+      .text("Murandi Apartments - Your Home, Our Pride", 0, footerY, {
+        align: "center",
+      });
+    doc.text(
+      "For inquiries, contact us at info@murandi.co.ke",
+      0,
+      footerY + 15,
+      { align: "center" }
+    );
+
+    doc.end();
+  });
+};
 
 //Send Verification Email
 const sendVerificationEmail = async (email, token) => {
@@ -172,14 +309,24 @@ const sendMaintenanceRequestEmail = async (email, request) => {
 };
 
 //Send Rent Payment Email
-const sendRentPaymentEmail = async (email, {amountPaid, apartmentNumber, paymentDate}) => {
+const sendRentPaymentEmail = async (
+  email,
+  { amountPaid, apartmentNumber, paymentDate }
+) => {
   const subject = "Rent Payment Confirmation";
 
   //Calculate Next Rent Date
   const currentDate = new Date(paymentDate);
   const nextPaymentDate = new Date(currentDate);
   nextPaymentDate.setDate(currentDate.getDate() + 30);
-  const formattedNextPaymentDate = nextPaymentDate.toISOString().split('T')[0];
+  const formattedNextPaymentDate = nextPaymentDate.toISOString().split("T")[0];
+
+  //Generate PDF receipt
+  const pdfBuffer = await createReceipt({
+    amountPaid,
+    apartmentNumber,
+    paymentDate,
+  });
 
   const message = `
     <div style="font-family: Arial, sans-serif; text-align: center; padding: 20px; background-color: #f4f4f4;">
@@ -197,6 +344,13 @@ const sendRentPaymentEmail = async (email, {amountPaid, apartmentNumber, payment
     to: email,
     subject: subject,
     html: message,
+    attachments: [
+      {
+        filename: `receipt_${paymentDate}.pdf`,
+        content: pdfBuffer,
+        encoding: "base64",
+      },
+    ],
   };
 
   try {
