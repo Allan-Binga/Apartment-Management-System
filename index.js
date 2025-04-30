@@ -28,8 +28,16 @@ app.use(express.json());
 //Cookie Parser
 app.use(cookieParser());
 
-//CORS
-app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+// CORS setup: handle local and production environments
+const corsOptions = {
+  origin:
+    process.env.NODE_ENV === "production"
+      ? "https://murandi-apartments-d3ba7e492c04.herokuapp.com/"
+      : "http://localhost:5173",
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 
 // Routes
 app.use("/murandi/v1/auth", authRoute);
