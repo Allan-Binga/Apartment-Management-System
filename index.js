@@ -13,7 +13,7 @@ const webhookRoute = require("./routes/webhook");
 const emailRoute = require("./routes/emailService");
 const tenantRoute = require("./routes/tenants");
 const reportRoute = require("./routes/reports");
-const receiptsRoute = require("./routes/receipts")
+const receiptsRoute = require("./routes/receipts");
 
 require("./config/db");
 
@@ -40,14 +40,21 @@ app.use("/murandi/v1/listings", listingsRoute);
 app.use("/murandi/v1/payments", paymentRoute);
 app.use("/murandi/v1/maintenance", maintenanceRequestRoute);
 app.use("/murandi/v1/checkout", checkoutRoute);
-app.use("/murandi/v1/reports", reportRoute)
-app.use("/murandi/v1/receipts", receiptsRoute)
+app.use("/murandi/v1/reports", reportRoute);
+app.use("/murandi/v1/receipts", receiptsRoute);
 
 if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "client", "dist")));
+  const clientDistPath = path.join(__dirname, "client", "dist");
 
-  app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "client", "dist", "index.html"));
+  app.use(express.static(clientDistPath));
+
+  // Fallback only for frontend routes.
+  app.use((req, res, next) => {
+    if (req.method === "GET" && !req.path.startsWith("/murandi")) {
+      res.sendFile(path.join(clientDistPath, "index.html"));
+    } else {
+      next();
+    }
   });
 }
 
