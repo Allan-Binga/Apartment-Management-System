@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import Home from "./pages/Tenant/Home";
 import TenantRegister from "./pages/Tenant/Register";
@@ -28,7 +28,8 @@ function App() {
     <Router>
       <Toaster position="top-center" toastOptions={{ duration: 1800 }} />
       <Routes>
-        <Route path="/" element={<Home />} />
+        {/* Redirect from the root path to /login/tenant */}
+        <Route path="/" element={<Navigate to="/login/tenant" />} />
         <Route path="/signup/tenant" element={<TenantRegister />} />
         <Route path="/login/tenant" element={<TenantLogin />} />
         <Route path="/signup/landlord" element={<LandlordRegister />} />
