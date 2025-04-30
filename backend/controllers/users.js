@@ -12,7 +12,7 @@ const getTenants = async (req, res) => {
   }
 };
 
-//Get tenants by ID
+// Get tenants by ID
 const getSingleTenant = async (req, res) => {
   const { id } = req.params;
 
@@ -35,18 +35,22 @@ const getSingleTenant = async (req, res) => {
 
     const tenant = tenantResult.rows[0];
 
-    // Fetch next rent due from payment table
+    // Fetch most recent payment and calculate next rent due (add 30 days)
+    let nextPaymentDate = null;
     const paymentResult = await client.query(
-      `SELECT paymentdate FROM payment WHERE tenantid = $1 AND paymentdate >= CURRENT_DATE ORDER BY paymentdate ASC LIMIT 1`,
+      `SELECT paymentdate FROM payment WHERE tenantid = $1 ORDER BY paymentdate DESC LIMIT 1`,
       [id]
     );
 
-    const nextPaymentDate =
-      paymentResult.rows.length > 0 ? paymentResult.rows[0].paymentdate : null;
+    if (paymentResult.rows.length > 0) {
+      const lastPaymentDate = new Date(paymentResult.rows[0].paymentdate);
+      lastPaymentDate.setDate(lastPaymentDate.getDate() + 30);
+      nextPaymentDate = lastPaymentDate.toISOString();
+    }
 
-    // Fetch latest maintenance request status using request_date
+    // Fetch latest maintenance request (status + request_date)
     const maintenanceResult = await client.query(
-      `SELECT status FROM maintenance_requests WHERE tenant_id = $1 ORDER BY request_date DESC LIMIT 1`,
+      `SELECT status, request_date FROM maintenance_requests WHERE tenant_id = $1 ORDER BY request_date DESC LIMIT 1`,
       [id]
     );
 
@@ -55,11 +59,40 @@ const getSingleTenant = async (req, res) => {
         ? maintenanceResult.rows[0].status
         : null;
 
+    const lastMaintenanceDate =
+      maintenanceResult.rows.length > 0
+        ? maintenanceResult.rows[0].request_date
+        : null;
+
+    // Fetch apartment listing price using apartmentnumber
+    let apartmentPrice = null;
+    if (tenant.apartmentnumber) {
+      const apartmentResult = await client.query(
+        "SELECT price FROM apartment_listings WHERE apartmentnumber = $1",
+        [tenant.apartmentnumber]
+      );
+      if (apartmentResult.rows.length > 0) {
+        apartmentPrice = apartmentResult.rows[0].price;
+      }
+    }
+
+    // Fetch PDF from receipts table
+    const receiptResult = await client.query(
+      "SELECT pdf FROM receipts WHERE tenant_id = $1 LIMIT 1",
+      [id]
+    );
+
+    const pdf =
+      receiptResult.rows.length > 0 ? receiptResult.rows[0].pdf : null;
+
     // Return combined response
     res.status(200).json({
       ...tenant,
       nextPaymentDate,
       latestMaintenanceStatus,
+      lastMaintenanceDate,
+      apartmentPrice,
+      pdf,
     });
   } catch (error) {
     console.error(error);

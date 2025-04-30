@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Logo from "../../src/assets/logo.png";
 import { CreditCard, Wrench, User, LogOut } from "lucide-react";
@@ -10,15 +10,35 @@ import "react-toastify/dist/ReactToastify.css";
 function SideBar() {
   const [firstName, setFirstName] = useState("");
   const location = useLocation();
+  const navigate = useNavigate();
 
   //Handle Logout
   const handleLogout = async () => {
     try {
-      await logoutUser();
-      toast.success("Successfully logged out.");
-      navigate("/");
+      const response = await axios.post(
+        `${endpoint}/auth/logout/tenant`,
+        {},
+        { withCredentials: true }
+      );
+
+      if (response.status === 200) {
+        // Clear manually (optional, helpful fallback)
+        document.cookie = "tenantSession=; Max-Age=0; path=/;";
+
+        // Clear local storage
+        localStorage.removeItem("tenantId");
+
+        // Show success toast
+        toast.success("Successfully logged out.");
+
+        // Redirect to login
+        window.location.href = "/login/tenant";
+      } else {
+        toast.error("You are not logged in.");
+      }
     } catch (error) {
-      toast.error("User not logged in.");
+      console.error("Logout error:", error);
+      toast.error("You are not logged in.");
     }
   };
 
@@ -42,7 +62,7 @@ function SideBar() {
       <div>
         <ToastContainer
           position="top-right"
-          autoClose={5000}
+          autoClose={3500}
           hideProgressBar={false}
           newestOnTop={false}
           closeOnClick
@@ -85,7 +105,9 @@ function SideBar() {
             >
               <CreditCard
                 className={`w-6 h-6 ${
-                  location.pathname === "/payments" ? "text-blue-500 bg-blue-100" : ""
+                  location.pathname === "/payments"
+                    ? "text-blue-500 bg-blue-100"
+                    : ""
                 }`}
               />
               <span>Rent Payments</span>
