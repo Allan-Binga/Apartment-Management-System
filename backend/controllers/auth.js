@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const { sendVerificationEmail } = require("./emailService.js");
+const { textAnnotation } = require("pdfkit");
 
 //Tenant Registration
 const registerTenant = async (req, res) => {
@@ -215,6 +216,11 @@ const loginTenant = async (req, res) => {
     // Return success message
     res.status(200).json({
       message: "Login successful",
+      tenant: {
+        id: tenant.rows[0].id,
+        firstName: tenant.rows[0].firstname,
+        email: tenant.rows[0].email
+      }
     });
   } catch (error) {
     console.error("Login Error:", error);

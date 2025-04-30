@@ -12,6 +12,61 @@ const getTenants = async (req, res) => {
   }
 };
 
+//Get tenants by ID
+const getSingleTenant = async (req, res) => {
+  const { id } = req.params;
+
+  const uuidRegex =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  if (!uuidRegex.test(id)) {
+    return res.status(400).json({ message: "Invalid UUID format." });
+  }
+
+  try {
+    // Fetch tenant details
+    const tenantResult = await client.query(
+      "SELECT * FROM tenants WHERE id = $1",
+      [id]
+    );
+
+    if (tenantResult.rows.length === 0) {
+      return res.status(404).json({ message: "Tenant not found." });
+    }
+
+    const tenant = tenantResult.rows[0];
+
+    // Fetch next rent due from payment table
+    const paymentResult = await client.query(
+      `SELECT paymentdate FROM payment WHERE tenantid = $1 AND paymentdate >= CURRENT_DATE ORDER BY paymentdate ASC LIMIT 1`,
+      [id]
+    );
+
+    const nextPaymentDate =
+      paymentResult.rows.length > 0 ? paymentResult.rows[0].paymentdate : null;
+
+    // Fetch latest maintenance request status using request_date
+    const maintenanceResult = await client.query(
+      `SELECT status FROM maintenance_requests WHERE tenant_id = $1 ORDER BY request_date DESC LIMIT 1`,
+      [id]
+    );
+
+    const latestMaintenanceStatus =
+      maintenanceResult.rows.length > 0
+        ? maintenanceResult.rows[0].status
+        : null;
+
+    // Return combined response
+    res.status(200).json({
+      ...tenant,
+      nextPaymentDate,
+      latestMaintenanceStatus,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Could not fetch tenant details." });
+  }
+};
+
 //Get current user
 const getCurrentMurandiUser = (req, res) => {
   const { tenantSession, landlordSession, adminSession } = req.cookies;
@@ -61,4 +116,10 @@ const getAdmins = async (req, res) => {
   }
 };
 
-module.exports = { getTenants, getLandlords, getAdmins, getCurrentMurandiUser };
+module.exports = {
+  getTenants,
+  getLandlords,
+  getAdmins,
+  getCurrentMurandiUser,
+  getSingleTenant,
+};

@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import signupImage from "../../assets/signup.jpg";
 import { Eye, EyeOff } from "lucide-react";
 import { endpoint } from "../../apiEndpoint";
-import { ToastContainer, toast} from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Spinner from "../../components/Spinner";
 
@@ -34,6 +34,7 @@ function TenantLogin() {
       });
 
       const data = await response.json();
+      localStorage.setItem("tenantId", data.tenant.id);
 
       if (!response.ok) {
         throw new Error(data.message || "Login failed");
@@ -133,7 +134,9 @@ function TenantLogin() {
           <button
             type="submit"
             disabled={loading}
-            className={"w-full py-3 font-semibold rounded-lg transition duration-200  bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"}
+            className={
+              "w-full py-3 font-semibold rounded-lg transition duration-200  bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
+            }
           >
             Login
           </button>

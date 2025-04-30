@@ -6,8 +6,34 @@ import Footer from "../../components/Footer";
 import { endpoint } from "../../apiEndpoint";
 import { Bath, Maximize, Wallet, Wrench, Bell, User2 } from "lucide-react";
 
+const id = localStorage.getItem("tenantId");
+
 function Home() {
+  const [tenant, setTenant] = useState(null);
   const [listings, setListings] = useState([]);
+
+  //Get tenant's details
+  const getTenantDetails = async () => {
+    try {
+      const response = await axios.get(`${endpoint}/users/tenants/${id}`);
+      return response.data;
+    } catch (error) {
+      throw error.message.data.message;
+    }
+  };
+
+  useEffect(() => {
+    const fetchDetails = async () => {
+      try {
+        const data = await getTenantDetails();
+        setTenant(data);
+      } catch (error) {
+        console.error("Failed to fetch tenant:", error);
+      }
+    };
+
+    fetchDetails();
+  }, []);
 
   const getListings = async () => {
     try {
@@ -45,7 +71,16 @@ function Home() {
               <div>
                 <p className="text-sm text-gray-500">Next Rent Due</p>
                 <p className="text-lg font-semibold text-gray-800">
-                  May 5, 2025
+                  {tenant?.nextPaymentDate
+                    ? new Date(tenant.nextPaymentDate).toLocaleDateString(
+                        "en-US",
+                        {
+                          month: "long",
+                          day: "numeric",
+                          year: "numeric",
+                        }
+                      )
+                    : "Not Available"}
                 </p>
               </div>
             </div>
@@ -54,7 +89,9 @@ function Home() {
               <Wrench className="w-6 h-6 text-yellow-600" />
               <div>
                 <p className="text-sm text-gray-500">Pending Requests</p>
-                <p className="text-lg font-semibold text-gray-800">2 Open</p>
+                <p className="text-lg font-semibold text-gray-800">
+                  {tenant?.pendingRequestStatusCount ?? 0} Open
+                </p>
               </div>
             </div>
 
@@ -70,7 +107,9 @@ function Home() {
               <User2 className="w-6 h-6 text-green-600" />
               <div>
                 <p className="text-sm text-gray-500">Welcome,</p>
-                <p className="text-lg font-semibold text-gray-800">John Doe</p>
+                <p className="text-lg font-semibold text-gray-800">
+                  {tenant ? `${tenant.firstname} ${tenant.lastname}` : "Tenant"}
+                </p>
               </div>
             </div>
           </div>
