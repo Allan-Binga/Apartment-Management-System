@@ -1,9 +1,10 @@
 const client = require("../config/db");
 
-//Update tenant information
+// Update tenant information
 const updateInformation = async (req, res) => {
   const tenantId = req.params.id;
-  const { firstName, lastName, leaseEndDate, email, phone } = req.body;
+  const { firstName, lastName, leaseEndDate, email, phone, apartmentnumber } =
+    req.body;
 
   const isUserLandlord = !!req.cookies.landlordSession;
 
@@ -25,6 +26,7 @@ const updateInformation = async (req, res) => {
       fields.push(`firstName = $${counter++}`);
       values.push(firstName);
     }
+
     if (lastName) {
       fields.push(`lastName = $${counter++}`);
       values.push(lastName);
@@ -34,12 +36,12 @@ const updateInformation = async (req, res) => {
       fields.push(`email = $${counter++}`);
       values.push(email);
     }
+
     if (phone) {
       fields.push(`phone = $${counter++}`);
       values.push(phone);
     }
 
-    //Lease End Date can only be updated by landord.
     if (leaseEndDate) {
       if (isUserLandlord) {
         fields.push(`leaseEndDate = $${counter++}`);
@@ -51,16 +53,33 @@ const updateInformation = async (req, res) => {
       }
     }
 
+    if (apartmentnumber) {
+      const checkApartmentQuery =
+        "SELECT 1 FROM apartment_listings WHERE apartmentnumber = $1 LIMIT 1";
+      const aptResult = await client.query(checkApartmentQuery, [
+        apartmentnumber,
+      ]);
+
+      if (aptResult.rowCount === 0) {
+        return res.status(400).json({
+          message: "Invalid apartment number. It does not exist in listings.",
+        });
+      }
+
+      fields.push(`apartmentnumber = $${counter++}`);
+      values.push(apartmentnumber);
+    }
+
     if (fields.length === 0) {
       return res.status(400).json({ message: "No data provided for update." });
     }
 
     const updateQuery = `
-        UPDATE tenants 
-        SET ${fields.join(", ")}
-        WHERE id = $${counter}
-        RETURNING *;
-      `;
+      UPDATE tenants 
+      SET ${fields.join(", ")}
+      WHERE id = $${counter}
+      RETURNING *;
+    `;
     values.push(tenantId);
 
     const updateResult = await client.query(updateQuery, values);

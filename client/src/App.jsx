@@ -21,6 +21,7 @@ import Listings from "./pages/Landlord/Listings";
 import LandlordPayments from "./pages/Landlord/Payments";
 import Reports from "./pages/Landlord/Reports";
 import Dashboard from "./pages/Landlord/Dashboard";
+import Tenants from "./pages/Landlord/Tenants";
 
 function App() {
   return (
@@ -48,6 +49,7 @@ function App() {
         <Route path="/landlord/payments" element={<LandlordPayments />} />
         <Route path="/landlord/reports" element={<Reports/>} />
         <Route path="/landlord/dashboard" element={<Dashboard/>}/>
+        <Route path="/tenants" element={<Tenants/>}/>
       </Routes>
     </Router>
   );

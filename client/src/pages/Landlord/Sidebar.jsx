@@ -9,11 +9,11 @@ import { endpoint } from "../../apiEndpoint";
 import {
   UserRoundCog,
   House,
-  Wrench,
   Wallet2,
   Newspaper,
   LogOut,
   LayoutDashboard,
+  Users2,
 } from "lucide-react";
 
 function LandlordSidebar() {
@@ -108,20 +108,6 @@ function LandlordSidebar() {
               <span>Dashboard</span>
             </a>
           </li>
-
-          <li>
-            <a
-              href="/listings"
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
-                location.pathname === "/listings"
-                  ? "text-blue-500 bg-blue-100"
-                  : "hover:bg-blue-100"
-              }`}
-            >
-              <House className="w-6 h-6" />
-              <span>Listings</span>
-            </a>
-          </li>
           {/*Payments*/}
           <li>
             <a
@@ -134,6 +120,33 @@ function LandlordSidebar() {
             >
               <Wallet2 className="w-6 h-6" />
               <span>Payments</span>
+            </a>
+          </li>
+             {/*Tenants*/}
+             <li>
+            <a
+              href="/tenants"
+              className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                location.pathname === "/tenants"
+                  ? "text-blue-500 bg-blue-100"
+                  : "hover:bg-blue-100"
+              }`}
+            >
+              <Users2 className="w-6 h-6" />
+              <span>Tenants</span>
+            </a>
+          </li>
+          <li>
+            <a
+              href="/listings"
+              className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                location.pathname === "/listings"
+                  ? "text-blue-500 bg-blue-100"
+                  : "hover:bg-blue-100"
+              }`}
+            >
+              <House className="w-6 h-6" />
+              <span>Listings</span>
             </a>
           </li>
 
@@ -151,10 +164,10 @@ function LandlordSidebar() {
               <span>Reports</span>
             </a>
           </li>
-        
+
           <a
             onClick={handleLogout}
-            className="flex items-center gap-3 px-3 py-2 rounded-lg bg-red-200 hover:bg-red-400 transition-colors cursor-pointer"
+            className="flex items-center gap-3 px-3 py-2 rounded-lg bg-red-100 hover:bg-red-300 transition-colors cursor-pointer"
           >
             <LogOut className="w-6 h-6" />
             <span>Logout</span>

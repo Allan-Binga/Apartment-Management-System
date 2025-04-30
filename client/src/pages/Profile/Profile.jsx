@@ -53,7 +53,6 @@ function Profile() {
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const day = date.getDate();
-    const weekday = date.toLocaleDateString("en-US", { weekday: "short" });
     const month = date.toLocaleDateString("en-US", { month: "short" });
     const year = date.getFullYear();
     return `${day}  ${month}  ${year}`;
@@ -121,7 +120,9 @@ function Profile() {
 
         <main className="flex-1 p-4 sm:p-6 lg:p-8 space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <h1 className="text-xl sm:text-2xl font-semibold">Tenant Profile</h1>
+            <h1 className="text-xl sm:text-2xl font-semibold">
+              Tenant Profile
+            </h1>
           </div>
 
           <div className="space-y-6">
@@ -135,10 +136,14 @@ function Profile() {
                 >
                   <div className="flex-shrink-0">{card.icon}</div>
                   <div className="flex-1">
-                    <h3 className="text-base sm:text-lg font-semibold">{card.title}</h3>
+                    <h3 className="text-base sm:text-lg font-semibold">
+                      {card.title}
+                    </h3>
                     <ul className="mt-2 text-sm text-gray-600 space-y-1">
                       {card.details.map((detail, i) => (
-                        <li key={i} className="truncate">{detail}</li>
+                        <li key={i} className="truncate">
+                          {detail}
+                        </li>
                       ))}
                     </ul>
                   </div>
