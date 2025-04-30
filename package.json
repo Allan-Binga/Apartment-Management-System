@@ -1,0 +1,12 @@
+{
+  "name": "murandi-apartments",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node backend/index.js",
+    "heroku-postbuild": "cd client && npm install && npm run build"
+  },
+  "engines": {
+    "node": "22.12.0",
+    "npm": "11.3.0"
+  }
+}
