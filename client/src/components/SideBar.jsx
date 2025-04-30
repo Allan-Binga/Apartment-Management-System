@@ -32,7 +32,7 @@ function SideBar() {
         toast.success("Successfully logged out.");
 
         // Redirect to login
-        window.location.href = "/login/tenant";
+        navigate("/login/tenant");
       } else {
         toast.error("You are not logged in.");
       }

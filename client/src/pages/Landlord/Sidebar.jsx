@@ -1,24 +1,45 @@
 import { useEffect, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 import axios from "axios";
 import Logo from "../../assets/logo.png";
 import { ToastContainer, toast, Bounce } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Spinner from "../../components/Spinner";
 import { endpoint } from "../../apiEndpoint";
-import { UserRoundCog, House, Wrench, Wallet2, Newspaper } from "lucide-react";
+import {
+  UserRoundCog,
+  House,
+  Wrench,
+  Wallet2,
+  Newspaper,
+  LogOut,
+  LayoutDashboard,
+} from "lucide-react";
 
 function LandlordSidebar() {
   const [firstName, setFirstName] = useState("");
   const location = useLocation();
+  const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
-      await logoutUser();
-      toast.success("Successfully logged out.");
-      navigate("/");
+      const response = await axios.post(
+        `${endpoint}/auth/logout/landlord`,
+        {},
+        { withCredentials: true }
+      );
+      if (response.status === 200) {
+        document.cookie = "landlordSession=; Max-Age=0; path=/;";
+
+        toast.success("Successfully logged out");
+
+        navigate("/login/landlord");
+      } else {
+        toast.error("You are not logged in");
+      }
     } catch (error) {
-      toast.error("User not logged in.");
+      console.error("Logout error:", error);
+      toast.error("You are not logged in");
     }
   };
 
@@ -76,6 +97,20 @@ function LandlordSidebar() {
         <ul className="space-y-2 text-gray-700 text-sm">
           <li>
             <a
+              href="/landlord/dashboard"
+              className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                location.pathname === "/landlord/dashboard"
+                  ? "text-blue-500 bg-blue-100"
+                  : "hover:bg-blue-100"
+              }`}
+            >
+              <LayoutDashboard className="w-6 h-6" />
+              <span>Dashboard</span>
+            </a>
+          </li>
+
+          <li>
+            <a
               href="/listings"
               className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
                 location.pathname === "/listings"
@@ -116,20 +151,14 @@ function LandlordSidebar() {
               <span>Reports</span>
             </a>
           </li>
-          {/*Maintenance Requests*/}
-          <li>
-            <a
-              href="/maintenance-requests"
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
-                location.pathname === "/maintenance-requests"
-                  ? "text-blue-500 bg-blue-100"
-                  : "hover:bg-blue-100"
-              }`}
-            >
-              <Wrench className="w-6 h-6" />
-              <span>Maintenance Requests</span>
-            </a>
-          </li>
+        
+          <a
+            onClick={handleLogout}
+            className="flex items-center gap-3 px-3 py-2 rounded-lg bg-red-200 hover:bg-red-400 transition-colors cursor-pointer"
+          >
+            <LogOut className="w-6 h-6" />
+            <span>Logout</span>
+          </a>
         </ul>
       </div>
     </aside>

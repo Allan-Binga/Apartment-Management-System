@@ -44,7 +44,7 @@ function LandlordLogin() {
           "bg-green-100 text-green-800 font-medium rounded-md p-3 shadow",
       });
       setTimeout(() => {
-        navigate("/home/landlord");
+        navigate("/landlord/dashboard");
       }, 5000);
     } catch (error) {
       toast.error(error.message || "Something went wrong.", {

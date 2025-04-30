@@ -20,6 +20,7 @@ import CancelPage from "./pages/Cancel/Cancel";
 import Listings from "./pages/Landlord/Listings";
 import LandlordPayments from "./pages/Landlord/Payments";
 import Reports from "./pages/Landlord/Reports";
+import Dashboard from "./pages/Landlord/Dashboard";
 
 function App() {
   return (
@@ -46,6 +47,7 @@ function App() {
         <Route path="/payment/cancelled" element={<CancelPage />} />
         <Route path="/landlord/payments" element={<LandlordPayments />} />
         <Route path="/landlord/reports" element={<Reports/>} />
+        <Route path="/landlord/dashboard" element={<Dashboard/>}/>
       </Routes>
     </Router>
   );
