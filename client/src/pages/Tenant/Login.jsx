@@ -44,7 +44,7 @@ function TenantLogin() {
           "bg-green-100 text-green-800 font-medium rounded-md p-3 shadow",
       });
       setTimeout(() => {
-        navigate("/");
+        navigate("/home");
       }, 5000);
     } catch (error) {
       toast.error(error.message || "Something went wrong", {
@@ -57,7 +57,7 @@ function TenantLogin() {
 
   return (
     <div
-      className="min-h-screen bg-cover bg-center relative flex items-center justify-center"
+      className="min-h-screen bg-cover bg-center relative flex items-center justify-center px-6 sm:px-8 lg:px-10"
       style={{ backgroundImage: `url(${signupImage})` }}
     >
       <ToastContainer
@@ -78,11 +78,13 @@ function TenantLogin() {
       {/* Blur overlay */}
       <div className="absolute inset-0 backdrop-blur-sm bg-black/30 z-0"></div>
 
-      <div className="relative z-10 bg-white rounded-lg shadow-lg overflow-hidden w-full max-w-md p-8 md:p-10">
-        <h1 className="text-3xl font-bold text-gray-800 text-center">
+      <div className="relative z-10 bg-white rounded-lg shadow-lg overflow-hidden w-full max-w-sm sm:max-w-md md:max-w-lg p-6 sm:p-8 md:p-10">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 text-center">
           Tenant Login
         </h1>
-        <p className="text-gray-600 mt-2 text-center">Enter your credentials</p>
+        <p className="text-gray-600 mt-2 text-sm sm:text-base text-center">
+          Enter your credentials
+        </p>
 
         {loading && (
           <div className="flex justify-center my-4">
@@ -90,7 +92,10 @@ function TenantLogin() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-6 mt-6">
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col gap-5 sm:gap-6 mt-5 sm:mt-6"
+        >
           <div>
             <label className="block text-sm font-medium text-gray-700">
               Email
@@ -135,14 +140,14 @@ function TenantLogin() {
             type="submit"
             disabled={loading}
             className={
-              "w-full py-3 font-semibold rounded-lg transition duration-200  bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
+              "w-full py-3 font-semibold rounded-lg transition duration-200 bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
             }
           >
             Login
           </button>
         </form>
 
-        <div className="flex flex-col items-center mt-6 gap-2 text-sm text-gray-600">
+        <div className="flex flex-col items-center mt-5 sm:mt-6 gap-2 text-sm sm:text-base text-gray-600">
           <p>
             Don’t have an account?{" "}
             <Link to="/signup/tenant" className="text-blue-500">

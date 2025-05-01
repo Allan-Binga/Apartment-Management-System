@@ -1,18 +1,19 @@
 import { useEffect, useState } from "react";
-import { useLocation, useParams, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Logo from "../../src/assets/logo.png";
-import { CreditCard, Wrench, User, LogOut } from "lucide-react";
+import { CreditCard, Wrench, User, LogOut, Menu, X } from "lucide-react";
 import { endpoint } from "../apiEndpoint";
 import { ToastContainer, toast, Bounce } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function SideBar() {
   const [firstName, setFirstName] = useState("");
+  const [isOpen, setIsOpen] = useState(false); // State for mobile sidebar toggle
   const location = useLocation();
   const navigate = useNavigate();
 
-  //Handle Logout
+  // Handle Logout
   const handleLogout = async () => {
     try {
       const response = await axios.post(
@@ -22,16 +23,9 @@ function SideBar() {
       );
 
       if (response.status === 200) {
-        // Clear manually (optional, helpful fallback)
         document.cookie = "tenantSession=; Max-Age=0; path=/;";
-
-        // Clear local storage
         localStorage.removeItem("tenantId");
-
-        // Show success toast
         toast.success("Successfully logged out.");
-
-        // Redirect to login
         navigate("/login/tenant");
       } else {
         toast.error("You are not logged in.");
@@ -57,110 +51,141 @@ function SideBar() {
     fetchUser();
   }, []);
 
+  // Toggle sidebar on mobile
+  const toggleSidebar = () => {
+    setIsOpen((prev) => !prev);
+  };
+
   return (
-    <aside className="fixed left-0 top-0 h-full w-72 bg-white p-4 rounded-tr-2xl rounded-br-2xl shadow-md flex flex-col justify-between">
-      <div>
-        <ToastContainer
-          position="top-right"
-          autoClose={3500}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="light"
-          transition={Bounce}
-          toastClassName="rounded-lg bg-white shadow-md border-l-4 border-blue-500 p-4 text-sm text-gray-800"
-          bodyClassName="flex items-center"
-          progressClassName="bg-blue-400 h-1 rounded"
-        />
+    <>
+      {/* Hamburger Menu for Mobile */}
+      <button
+        className="fixed top-4 left-4 z-50 lg:hidden p-2 bg-white rounded-md shadow-md"
+        onClick={toggleSidebar}
+      >
+        {isOpen ? (
+          <X className="w-6 h-6 text-gray-700" />
+        ) : (
+          <Menu className="w-6 h-6 text-gray-700" />
+        )}
+      </button>
 
-        {/* Logo */}
-        <div className="mb-6 flex justify-center">
-          <img src={Logo} alt="Apartment Logo" className="h-45 w-45" />
-        </div>
+      {/* Sidebar */}
+      <aside
+        className={`fixed left-0 top-0 h-full w-64 sm:w-72 bg-white p-4 rounded-tr-2xl rounded-br-2xl shadow-md flex flex-col justify-between transition-transform duration-300 lg:transform-none ${
+          isOpen ? "translate-x-0" : "-translate-x-full"
+        } lg:translate-x-0 z-40`}
+      >
+        <div>
+          <ToastContainer
+            position="top-right"
+            autoClose={3500}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+            toastClassName="rounded-lg bg-white shadow-md border-l-4 border-blue-500 p-4 text-sm text-gray-800"
+            bodyClassName="flex items-center"
+            progressClassName="bg-blue-400 h-1 rounded"
+          />
 
-        {/* Profile & Greeting */}
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-12 h-12 bg-blue-600 text-white flex items-center justify-center rounded-xl text-xl">
-            <User />
+          {/* Logo */}
+          <div className="mb-6 flex justify-center">
+            <img src={Logo} alt="Apartment Logo" className="h-45 w-45" />
           </div>
-          <p className="font-medium text-gray-700 text-lg">
-            Hello {firstName || "Guest"}
-          </p>
-        </div>
 
-        {/* Navigation */}
-        <ul className="space-y-2 text-gray-700 text-sm">
-          <li>
-            <a
-              href="/payments"
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
-                location.pathname === "/payments"
-                  ? "text-blue-500 bg-blue-100"
-                  : "hover:bg-blue-100"
-              }`}
-            >
-              <CreditCard
-                className={`w-6 h-6 ${
+          {/* Profile & Greeting */}
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-12 h-12 bg-blue-600 text-white flex items-center justify-center rounded-xl text-xl">
+              <User />
+            </div>
+            <p className="font-medium text-gray-700 text-lg">
+              Hello {firstName || "Guest"}
+            </p>
+          </div>
+
+          {/* Navigation */}
+          <ul className="space-y-2 text-gray-700 text-sm">
+            <li>
+              <a
+                href="/payments"
+                className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
                   location.pathname === "/payments"
                     ? "text-blue-500 bg-blue-100"
-                    : ""
+                    : "hover:bg-blue-100"
                 }`}
-              />
-              <span>Rent Payments</span>
-            </a>
-          </li>
-          <li>
-            <a
-              href="/maintenance-requests"
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
-                location.pathname === "/maintenance-requests"
-                  ? "text-blue-500 bg-blue-100"
-                  : "hover:bg-blue-100"
-              }`}
-            >
-              <Wrench
-                className={`w-6 h-6 ${
+              >
+                <CreditCard
+                  className={`w-6 h-6 ${
+                    location.pathname === "/payments"
+                      ? "text-blue-500 bg-blue-100"
+                      : ""
+                  }`}
+                />
+                <span>Rent Payments</span>
+              </a>
+            </li>
+            <li>
+              <a
+                href="/maintenance-requests"
+                className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
                   location.pathname === "/maintenance-requests"
-                    ? "text-blue-500"
-                    : ""
+                    ? "text-blue-500 bg-blue-100"
+                    : "hover:bg-blue-100"
                 }`}
-              />
-              <span>Maintenance Requests</span>
-            </a>
-          </li>
-          <li>
-            <a
-              href="/profile"
-              className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
-                location.pathname === "/profile"
-                  ? "text-blue-500 bg-blue-100"
-                  : "hover:bg-blue-100"
-              }`}
-            >
-              <User
-                className={`w-6 h-6 ${
-                  location.pathname === "/profile" ? "text-blue-500" : ""
+              >
+                <Wrench
+                  className={`w-6 h-6 ${
+                    location.pathname === "/maintenance-requests"
+                      ? "text-blue-500"
+                      : ""
+                  }`}
+                />
+                <span>Maintenance Requests</span>
+              </a>
+            </li>
+            <li>
+              <a
+                href="/profile"
+                className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                  location.pathname === "/profile"
+                    ? "text-blue-500 bg-blue-100"
+                    : "hover:bg-blue-100"
                 }`}
-              />
-              <span>Profile</span>
-            </a>
-          </li>
-          <li>
-            <a
-              onClick={handleLogout}
-              className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-red-200 transition-colors cursor-pointer"
-            >
-              <LogOut className="w-6 h-6" />
-              <span>Logout</span>
-            </a>
-          </li>
-        </ul>
-      </div>
-    </aside>
+              >
+                <User
+                  className={`w-6 h-6 ${
+                    location.pathname === "/profile" ? "text-blue-500" : ""
+                  }`}
+                />
+                <span>Profile</span>
+              </a>
+            </li>
+            <li>
+              <a
+                onClick={handleLogout}
+                className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-red-200 transition-colors cursor-pointer"
+              >
+                <LogOut className="w-6 h-6" />
+                <span>Logout</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </aside>
+
+      {/* Overlay for Mobile */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-30 lg:hidden"
+          onClick={toggleSidebar}
+        ></div>
+      )}
+    </>
   );
 }
 

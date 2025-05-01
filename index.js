@@ -25,19 +25,27 @@ app.use("/murandi/v1/webhook", webhookRoute);
 
 app.use(express.json());
 
-//Cookie Parser
-app.use(cookieParser());
-
 // CORS setup: handle local and production environments
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://murandi-apartments-d3ba7e492c04.herokuapp.com",
+];
+
 const corsOptions = {
-  origin:
-    process.env.NODE_ENV === "production"
-      ? "https://murandi-apartments-d3ba7e492c04.herokuapp.com/"
-      : "http://localhost:5173",
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true,
 };
 
 app.use(cors(corsOptions));
+
+//Cookie Parser
+app.use(cookieParser());
 
 // Routes
 app.use("/murandi/v1/auth", authRoute);

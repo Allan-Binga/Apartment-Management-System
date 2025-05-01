@@ -27,7 +27,7 @@ function LandlordRegister() {
 
   return (
     <div
-      className="min-h-screen bg-cover bg-center relative flex items-center justify-center"
+      className="min-h-screen bg-cover bg-center relative flex items-center justify-center px-4 sm:px-6 lg:px-8"
       style={{
         backgroundImage: `url(${signupImage})`,
       }}
@@ -35,18 +35,20 @@ function LandlordRegister() {
       {/* Blur overlay */}
       <div className="absolute inset-0 backdrop-blur-sm bg-black/30 z-0"></div>
 
-      {/*Registration Card*/}
-      <div className="relative z-10 bg-white rounded-lg shadow-lg overflow-hidden w-full max-w-xl p-8 md:p-12">
-        <h1 className="text-3xl font-bold text-gray-800 text-center">
+      {/* Registration Card */}
+      <div className="relative z-10 bg-white rounded-lg shadow-lg overflow-hidden w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl p-6 sm:p-8 md:p-10 lg:p-12">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 text-center">
           Signup as a landlord
         </h1>
-        <p className="text-gray-600 mt-2 text-center">
+        <p className="text-gray-600 mt-2 text-sm sm:text-base text-center">
           Enter your details below
         </p>
 
-        {error && <p className="text-red-600 text-sm text-center">{error}</p>}
+        {error && (
+          <p className="text-red-600 text-sm text-center mt-4">{error}</p>
+        )}
         {success && (
-          <p className="text-green-600 text-sm text-center">{success}</p>
+          <p className="text-green-600 text-sm text-center mt-4">{success}</p>
         )}
 
         <form
@@ -78,7 +80,7 @@ function LandlordRegister() {
               setLoading(false);
             }
           }}
-          className="flex flex-col gap-6 mt-8"
+          className="flex flex-col gap-5 sm:gap-6 mt-6 sm:mt-8"
         >
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
@@ -128,7 +130,7 @@ function LandlordRegister() {
               Phone Number
             </label>
             <PhoneInput
-              name="firstName"
+              name="phoneNumber"
               value={formData.phoneNumber}
               onChange={(value) =>
                 setFormData((prev) => ({ ...prev, phoneNumber: value }))
@@ -175,7 +177,7 @@ function LandlordRegister() {
           </button>
         </form>
 
-        <div className="flex flex-col items-center mt-6 gap-2 text-sm text-gray-600">
+        <div className="flex flex-col items-center mt-5 sm:mt-6 gap-2 text-sm sm:text-base text-gray-600">
           <p>
             Already have an account?{" "}
             <Link to="/login/landlord" className="text-blue-500 hover:pointer">

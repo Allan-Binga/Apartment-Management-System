@@ -23,6 +23,7 @@ import Reports from "./pages/Landlord/Reports";
 import Dashboard from "./pages/Landlord/Dashboard";
 import Tenants from "./pages/Landlord/Tenants";
 
+
 function App() {
   return (
     <Router>
@@ -30,6 +31,7 @@ function App() {
       <Routes>
         {/* Redirect from the root path to /login/tenant */}
         <Route path="/" element={<Navigate to="/login/tenant" />} />
+        <Route path="/home" element={<Home/>}/>
         <Route path="/signup/tenant" element={<TenantRegister />} />
         <Route path="/login/tenant" element={<TenantLogin />} />
         <Route path="/signup/landlord" element={<LandlordRegister />} />

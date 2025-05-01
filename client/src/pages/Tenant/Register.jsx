@@ -55,7 +55,7 @@ function TenantRegister() {
 
   return (
     <div
-      className="min-h-screen bg-cover bg-center relative flex items-center justify-center"
+      className="min-h-screen bg-cover bg-center relative flex items-center justify-center px-4 sm:px-6 lg:px-8"
       style={{
         backgroundImage: `url(${signupImage})`,
       }}
@@ -77,17 +77,19 @@ function TenantRegister() {
       <div className="absolute inset-0 backdrop-blur-sm bg-black/30 z-0"></div>
 
       {/* Registration Card */}
-      <div className="relative z-10 bg-white rounded-lg shadow-lg overflow-hidden w-full max-w-xl p-8 md:p-12">
-        <h1 className="text-3xl font-bold text-gray-800 text-center">
-          Signup as tenant
+      <div className="relative z-10 bg-white rounded-lg shadow-lg overflow-hidden w-full max-w-lg sm:max-w-xl md:max-w-2xl p-6 sm:p-8 md:p-10 lg:p-12">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 text-center">
+          Signup as Tenant
         </h1>
-        <p className="text-gray-600 mt-2 text-center">
+        <p className="text-gray-600 mt-2 text-sm sm:text-base text-center">
           Enter your details below
         </p>
 
-        {error && <p className="text-red-600 text-sm text-center">{error}</p>}
+        {error && (
+          <p className="text-red-600 text-sm text-center mt-4">{error}</p>
+        )}
         {success && (
-          <p className="text-green-600 text-sm text-center">{success}</p>
+          <p className="text-green-600 text-sm text-center mt-4">{success}</p>
         )}
         {loading && (
           <div className="flex justify-center my-4">
@@ -127,7 +129,7 @@ function TenantRegister() {
               setLoading(false);
             }
           }}
-          className="flex flex-col gap-6 mt-8"
+          className="flex flex-col gap-5 sm:gap-6 mt-6 sm:mt-8"
         >
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
@@ -140,7 +142,7 @@ function TenantRegister() {
                 value={formData.firstName}
                 onChange={handleChange}
                 placeholder="Enter your first name"
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2.5 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div>
@@ -153,7 +155,7 @@ function TenantRegister() {
                 value={formData.lastName}
                 onChange={handleChange}
                 placeholder="Enter your last name"
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2.5 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
           </div>
@@ -168,7 +170,7 @@ function TenantRegister() {
               value={formData.email}
               onChange={handleChange}
               placeholder="Enter your email"
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2.5 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
@@ -177,7 +179,7 @@ function TenantRegister() {
               Phone Number
             </label>
             <PhoneInput
-              name="firstName"
+              name="phoneNumber"
               value={formData.phoneNumber}
               onChange={(value) =>
                 setFormData((prev) => ({ ...prev, phoneNumber: value }))
@@ -185,7 +187,7 @@ function TenantRegister() {
               country={"ke"}
               enableSearch
               containerClass="w-full mt-1"
-              inputClass="!w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              inputClass="!w-full border border-gray-300 rounded-md shadow-sm py-2.5 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
@@ -197,7 +199,7 @@ function TenantRegister() {
               name="apartmentNumber"
               value={formData.apartmentNumber}
               onChange={handleChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2.5 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="" disabled>
                 Select apartment number
@@ -221,7 +223,7 @@ function TenantRegister() {
                 value={formData.leaseStartDate}
                 onChange={handleChange}
                 min={new Date().toISOString().split("T")[0]}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2.5 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
@@ -229,14 +231,13 @@ function TenantRegister() {
               <label className="block text-sm font-medium text-gray-700">
                 Lease End Date
               </label>
-
               <input
                 type="date"
                 name="leaseEndDate"
                 value={formData.leaseEndDate}
                 onChange={handleChange}
                 min={formData.leaseStartDate}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2.5 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
           </div>
@@ -251,7 +252,7 @@ function TenantRegister() {
               onChange={handleChange}
               type={showPassword ? "text" : "password"}
               placeholder="Enter your password"
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2.5 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <div
               className="absolute inset-y-0 right-0 pr-3 flex items-center mt-6 cursor-pointer"
@@ -268,30 +269,33 @@ function TenantRegister() {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full py-3 cursor-pointer font-semibold rounded-lg transition duration-200 ${
-              loading ? "bg-gray-400" : "bg-blue-500 hover:bg-blue-700"
+            className={`w-full py-3 px-4 font-semibold rounded-lg transition duration-200 text-base cursor-pointer ${
+              loading ? "bg-gray-400" : "bg-blue-500 hover:bg-blue-600"
             } text-white`}
           >
             Signup
           </button>
         </form>
 
-        <div className="flex flex-col items-center mt-6 gap-2 text-sm text-gray-600">
+        <div className="flex flex-col items-center mt-6 gap-3 text-sm sm:text-base text-gray-600">
           <p>
             Already have an account?{" "}
-            <Link to="/login/tenant" className="text-blue-500 hover:pointer">
+            <Link to="/login/tenant" className="text-blue-500 hover:underline">
               Login
             </Link>
           </p>
           <p>
             Are you a landlord?{" "}
-            <Link to="/signup/landlord" className="text-blue-500 hover:pointer">
+            <Link
+              to="/signup/landlord"
+              className="text-blue-500 hover:underline cursor-pointer"
+            >
               Register here
             </Link>
           </p>
           <p>
             Are you an admin?{" "}
-            <Link to="/login/admin" className="text-blue-500 hover:pointer">
+            <Link to="/login/admin" className="text-blue-500 hover:underline cursor-pointer">
               Login
             </Link>
           </p>

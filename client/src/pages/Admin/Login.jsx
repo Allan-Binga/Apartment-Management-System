@@ -38,7 +38,7 @@ function AdminLogin() {
       }
       navigate("/");
     } catch (error) {
-      setError(error.messafe);
+      setError(error.message); // Fixed typo: 'messafe' to 'message'
     } finally {
       setLoading(false);
     }
@@ -46,7 +46,7 @@ function AdminLogin() {
 
   return (
     <div
-      className="min-h-screen bg-cover bg-center relative flex items-center justify-center"
+      className="min-h-screen bg-cover bg-center relative flex items-center justify-center px-4 sm:px-6 lg:px-8"
       style={{
         backgroundImage: `url(${loginImage})`,
       }}
@@ -55,17 +55,22 @@ function AdminLogin() {
       <div className="absolute inset-0 backdrop-blur-sm bg-black/30 z-0"></div>
 
       {/* Login Card */}
-      <div className="relative z-10 bg-white rounded-lg shadow-lg overflow-hidden w-full max-w-xl p-8 md:p-12">
-        <h1 className="text-3xl font-bold text-gray-800 text-center">
+      <div className="relative z-10 bg-white rounded-lg shadow-lg overflow-hidden w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl p-6 sm:p-8 md:p-10 lg:p-12">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 text-center">
           Please login
         </h1>
-        <p className="text-gray-600 mt-2 text-center">
+        <p className="text-gray-600 mt-2 text-sm sm:text-base text-center">
           Enter your credentials below
         </p>
 
-        {error && <p className="text-red-600 text-sm text-center">{error}</p>}
+        {error && (
+          <p className="text-red-600 text-sm text-center mt-4">{error}</p>
+        )}
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-6 mt-8">
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col gap-5 sm:gap-6 mt-6 sm:mt-8"
+        >
           {/* Email Input */}
           <div>
             <label className="block text-sm font-medium text-gray-700">
@@ -124,7 +129,7 @@ function AdminLogin() {
         </form>
 
         {/* Redirect to Register */}
-        <p className="mt-6 text-sm text-center text-gray-600">
+        <p className="mt-5 sm:mt-6 text-sm sm:text-base text-center text-gray-600">
           Don't have an account?{" "}
           <Link to="/signup/admin" className="text-blue-500 hover:pointer">
             Register here
