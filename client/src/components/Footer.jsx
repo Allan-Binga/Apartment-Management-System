@@ -9,7 +9,7 @@ function Footer({ noSidebar }) {
         <div className="text-sm text-center md:text-left mb-4 md:mb-0">
           © 2025 Murandi. All rights reserved.
         </div>
-        <div className="flex space-x-4 text-sm">
+        {/* <div className="flex space-x-4 text-sm">
           <a href="/about" className="hover:text-blue-600 transition">
             About
           </a>
@@ -19,7 +19,7 @@ function Footer({ noSidebar }) {
           <a href="/terms" className="hover:text-blue-600 transition">
             Terms
           </a>
-        </div>
+        </div> */}
       </div>
     </footer>
   );

@@ -23,6 +23,7 @@ import Reports from "./pages/Landlord/Reports";
 import Dashboard from "./pages/Landlord/Dashboard";
 import Tenants from "./pages/Landlord/Tenants";
 import LandingPage from "./pages/Landing/Landing";
+import AdminDashboard from "./pages/Admin/Dashboard";
 
 
 function App() {
@@ -55,6 +56,7 @@ function App() {
         <Route path="/landlord/reports" element={<Reports/>} />
         <Route path="/landlord/dashboard" element={<Dashboard/>}/>
         <Route path="/tenants" element={<Tenants/>}/>
+        <Route path="/admin/dashboard" element={<AdminDashboard/>}/>
       </Routes>
     </Router>
   );

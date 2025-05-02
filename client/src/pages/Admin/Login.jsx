@@ -3,11 +3,13 @@ import loginImage from "../../assets/admin.jpg";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import { endpoint } from "../../apiEndpoint";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Spinner from "../../components/Spinner";
 
 function AdminLogin() {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -18,7 +20,6 @@ function AdminLogin() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
     setLoading(true);
 
     try {
@@ -36,9 +37,19 @@ function AdminLogin() {
       if (!response.ok) {
         throw new Error(data.message || "Login failed");
       }
-      navigate("/");
+
+      toast.success("Login successful", {
+        className:
+          "bg-green-100 text-green-800 font-medium rounded-md p-3 shadow",
+      });
+
+      setTimeout(() => {
+        navigate("/admin/dashboard");
+      }, 5000);
     } catch (error) {
-      setError(error.message); // Fixed typo: 'messafe' to 'message'
+      toast.error(error.message || "Something went wrong.", {
+        className: "bg-red-100 text-red-800 font-medium rounded-md p-3 shadow",
+      });
     } finally {
       setLoading(false);
     }
@@ -47,10 +58,24 @@ function AdminLogin() {
   return (
     <div
       className="min-h-screen bg-cover bg-center relative flex items-center justify-center px-4 sm:px-6 lg:px-8"
-      style={{
-        backgroundImage: `url(${loginImage})`,
-      }}
+      style={{ backgroundImage: `url(${loginImage})` }}
     >
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        toastClassName="rounded-lg bg-white shadow-md border-l-4 border-blue-500 p-4 text-sm text-gray-800"
+        bodyClassName="flex items-center"
+        progressClassName="bg-blue-400 h-1 rounded"
+      />
+
       {/* Blur overlay */}
       <div className="absolute inset-0 backdrop-blur-sm bg-black/30 z-0"></div>
 
@@ -63,8 +88,10 @@ function AdminLogin() {
           Enter your credentials below
         </p>
 
-        {error && (
-          <p className="text-red-600 text-sm text-center mt-4">{error}</p>
+        {loading && (
+          <div className="flex justify-center my-4">
+            <Spinner />
+          </div>
         )}
 
         <form
@@ -82,6 +109,7 @@ function AdminLogin() {
               value={formData.email}
               onChange={handleChange}
               placeholder="example@mail.com"
+              required
               className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
@@ -97,6 +125,7 @@ function AdminLogin() {
               value={formData.password}
               onChange={handleChange}
               placeholder="Enter your password"
+              required
               className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <div
@@ -111,11 +140,6 @@ function AdminLogin() {
             </div>
           </div>
 
-          {/* Forgot Password */}
-          <div className="text-right text-sm text-blue-500 hover:underline">
-            <Link to="/forgot-password">Forgot password?</Link>
-          </div>
-
           {/* Submit Button */}
           <button
             type="submit"
@@ -126,6 +150,11 @@ function AdminLogin() {
           >
             {loading ? "Logging in..." : "Login"}
           </button>
+
+          {/* Forgot Password */}
+          <div className="text-right text-sm text-blue-500 hover:underline">
+            <Link to="/forgot-password">Forgot password?</Link>
+          </div>
         </form>
 
         {/* Redirect to Register */}
