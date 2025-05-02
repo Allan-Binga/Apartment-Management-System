@@ -9,16 +9,19 @@ import { Bath, Maximize, Wallet, Wrench, Bell, User2 } from "lucide-react";
 const id = localStorage.getItem("tenantId");
 
 function Home() {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [tenant, setTenant] = useState(null);
   const [listings, setListings] = useState([]);
 
-  //Get tenant's details
+  // Get tenant's details
   const getTenantDetails = async () => {
     try {
       const response = await axios.get(`${endpoint}/users/tenants/${id}`);
       return response.data;
     } catch (error) {
-      throw error.message.data.message;
+      const errMsg =
+        error?.response?.data?.message || error.message || "Unknown error";
+      throw errMsg;
     }
   };
 
@@ -28,7 +31,9 @@ function Home() {
         const data = await getTenantDetails();
         setTenant(data);
       } catch (error) {
-        console.error("Failed to fetch tenant:", error);
+        const errMsg =
+          error?.response?.data?.message || error.message || "Unknown error";
+        throw errMsg;
       }
     };
 
@@ -55,22 +60,26 @@ function Home() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Header stays in its own flex row */}
-      <Navbar className="z-10" />
+      <Navbar
+        sidebarOpen={sidebarOpen}
+        setSidebarOpen={setSidebarOpen}
+        className="z-10"
+      />
 
       {/* Main content area with sidebar and main */}
       <div className="flex flex-1">
         {/* Sidebar */}
-        <SideBar />
+        <SideBar sidebarOpen={sidebarOpen} />
 
         {/* Main content (dashboard + listings) */}
-        <main className="flex-1 ml-[calc(18rem+2rem)] p-6">
+        <main className="flex-1 lg:ml-[calc(18rem+2rem)] p-4 sm:p-6">
           {/* Dashboard Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-4 sm:mb-6">
             <div className="bg-white rounded-xl shadow p-4 flex items-center gap-4">
               <Wallet className="w-6 h-6 text-blue-600" />
               <div>
                 <p className="text-sm text-gray-500">Next Rent Due</p>
-                <p className="text-lg font-semibold text-gray-800">
+                <p className="text-base sm:text-lg font-semibold text-gray-800">
                   {tenant?.nextPaymentDate
                     ? new Date(tenant.nextPaymentDate).toLocaleDateString(
                         "en-US",
@@ -89,7 +98,7 @@ function Home() {
               <Wrench className="w-6 h-6 text-yellow-600" />
               <div>
                 <p className="text-sm text-gray-500">Pending Requests</p>
-                <p className="text-lg font-semibold text-gray-800">
+                <p className="text-base sm:text-lg font-semibold text-gray-800">
                   {tenant?.pendingRequestStatusCount ?? 0} Open
                 </p>
               </div>
@@ -99,7 +108,9 @@ function Home() {
               <Bell className="w-6 h-6 text-red-600" />
               <div>
                 <p className="text-sm text-gray-500">New Notifications</p>
-                <p className="text-lg font-semibold text-gray-800">3 Alerts</p>
+                <p className="text-base sm:text-lg font-semibold text-gray-800">
+                  3 Alerts
+                </p>
               </div>
             </div>
 
@@ -107,7 +118,7 @@ function Home() {
               <User2 className="w-6 h-6 text-green-600" />
               <div>
                 <p className="text-sm text-gray-500">Welcome,</p>
-                <p className="text-lg font-semibold text-gray-800">
+                <p className="text-base sm:text-lg font-semibold text-gray-800">
                   {tenant ? `${tenant.firstname} ${tenant.lastname}` : "Tenant"}
                 </p>
               </div>
@@ -115,7 +126,7 @@ function Home() {
           </div>
 
           {/* Apartment Listings */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {listings.map((apt) => (
               <div
                 key={apt.id}
@@ -125,21 +136,21 @@ function Home() {
                   }`}
               >
                 {/* Image Section */}
-                <div className="relative h-64">
+                <div className="relative h-48 sm:h-64">
                   <img
                     src={apt.image}
                     alt={apt.title}
                     className="w-full h-full object-cover rounded-t-xl rounded-b-none"
                   />
                   <div className="absolute top-4 left-4 flex gap-2">
-                    {/*Bedroom Tag*/}
+                    {/* Bedroom Tag */}
                     <span className="bg-gradient-to-r from-blue-600 to-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium shadow-lg">
                       {apt.beds === "studio"
                         ? "Studio"
                         : `${apt.beds || 2} Bedroom`}
                     </span>
 
-                    {/*Leased Tag*/}
+                    {/* Leased Tag */}
                     <span
                       className={`px-3 py-1 rounded-full text-sm font-medium shadow-lg ${
                         apt.leased
@@ -153,21 +164,21 @@ function Home() {
                 </div>
 
                 {/* Content Section */}
-                <div className="p-6 space-y-4">
-                  <h2 className="text-xl font-semibold text-gray-900 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                <div className="p-4 sm:p-6 space-y-4">
+                  <h2 className="text-lg sm:text-xl font-semibold text-gray-900 line-clamp-2 group-hover:text-blue-600 transition-colors">
                     {apt.title}
                   </h2>
                   <p className="text-sm text-gray-600">{apt.description}</p>
 
                   <div className="flex items-center gap-2 mt-2">
                     <span className="text-sm text-gray-500">Price</span>
-                    <span className="text-2xl font-bold text-blue-600">
+                    <span className="text-xl sm:text-2xl font-bold text-blue-600">
                       Kes. {apt.price}
                     </span>
                   </div>
 
-                  {/* Beds and Baths*/}
-                  <div className="grid grid-cols-2 gap-3 mt-6">
+                  {/* Beds and Baths */}
+                  <div className="grid grid-cols-2 gap-3 mt-4 sm:mt-6">
                     <div className="flex flex-col items-center gap-1 bg-blue-50 p-2 rounded-lg">
                       <Bath className="w-5 h-5 text-blue-600" />
                       <span className="text-sm font-medium text-gray-600">

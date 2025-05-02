@@ -5,9 +5,10 @@ import { endpoint } from "../../apiEndpoint";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import Spinner from "../../components/Spinner";
-import { FileText, Clock , Wrench, Wallet} from "lucide-react";
+import { FileText, Clock, Wrench, Wallet } from "lucide-react";
 
 function Reports() {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -42,10 +43,10 @@ function Reports() {
     (report) => report.report_type?.toLowerCase() === "payment"
   );
 
-  const ReportTable = ({ data, title, isPayment , Icon}) => (
+  const ReportTable = ({ data, title, isPayment, Icon }) => (
     <section className="bg-white p-6 sm:p-8 rounded-2xl shadow-sm">
       <div className="flex items-center gap-2 mb-4">
-      {Icon && <Icon className="w-5 h-5 text-gray-600" />}
+        {Icon && <Icon className="w-5 h-5 text-gray-600" />}
         <h3 className="text-lg font-semibold">{title}</h3>
       </div>
 
@@ -174,13 +175,15 @@ function Reports() {
   );
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <Navbar className="z-10" />
+    <div className="flex flex-col min-h-screen bg-gray-50">
+      <Navbar
+        className="z-10"
+        sidebarOpen={sidebarOpen}
+        setSidebarOpen={setSidebarOpen}
+      />
 
       <div className="flex flex-1">
-        <div className="hidden md:block">
-          <Sidebar />
-        </div>
+        <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
         <main className="flex-1 p-4 md:pl-80 bg-gray-50">
           <div className="max-w-full sm:max-w-3xl md:max-w-4xl mx-auto space-y-6 sm:space-y-8">

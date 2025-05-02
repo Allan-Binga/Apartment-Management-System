@@ -14,12 +14,26 @@ import SideBar from "../../components/SideBar";
 import Footer from "../../components/Footer";
 import { endpoint } from "../../apiEndpoint";
 
-const id = localStorage.getItem("tenantId");
+const id = localStorage.getItem("tenantId") || null;
 
 function Profile() {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState({ title: "", details: [] });
-  const [tenant, setTenant] = useState(null);
+  const [tenant, setTenant] = useState({
+    firstname: "N/A",
+    lastname: "",
+    phonenumber: "N/A",
+    email: "N/A",
+    apartmentnumber: "N/A",
+    leasestartdate: null,
+    leaseenddate: null,
+    apartmentPrice: null,
+    nextPaymentDate: null,
+    lastMaintenanceDate: null,
+    latestMaintenanceStatus: "N/A",
+    pdf: [],
+  });
 
   const openModal = (title, details) => {
     setModalContent({ title, details });
@@ -44,23 +58,18 @@ function Profile() {
     getTenantDetails();
   }, []);
 
-  // Show loading until tenant is loaded
-  if (!tenant) {
-    return <div className="p-4 sm:p-8">Loading...</div>;
-  }
-
   // Date formatter
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const day = date.getDate();
     const month = date.toLocaleDateString("en-US", { month: "short" });
     const year = date.getFullYear();
-    return `${day}  ${month}  ${year}`;
+    return `${day} ${month} ${year}`;
   };
 
   const cards = [
     {
-      icon: <User className="text-blue-500 w-6 h-6" />,
+      icon: <User className="text-blue-500 w-5 sm:w-6 h-5 sm:h-6" />,
       title: "Personal Info",
       details: [
         `Name: ${tenant.firstname} ${tenant.lastname}`,
@@ -69,7 +78,7 @@ function Profile() {
       ],
     },
     {
-      icon: <Home className="text-green-500 w-6 h-6" />,
+      icon: <Home className="text-green-500 w-5 sm:w-6 h-5 sm:h-6" />,
       title: "Lease Details",
       details: [
         `Unit: ${tenant.apartmentnumber || "N/A"}`,
@@ -79,7 +88,7 @@ function Profile() {
       ],
     },
     {
-      icon: <DollarSign className="text-yellow-500 w-6 h-6" />,
+      icon: <DollarSign className="text-yellow-500 w-5 sm:w-6 h-5 sm:h-6" />,
       title: "Rent & Payments",
       details: [
         `Monthly Rent: ${
@@ -91,7 +100,7 @@ function Profile() {
       ],
     },
     {
-      icon: <Wrench className="text-red-500 w-6 h-6" />,
+      icon: <Wrench className="text-red-500 w-5 sm:w-6 h-5 sm:h-6" />,
       title: "Maintenance",
       details: [
         `Last Request: ${
@@ -103,7 +112,7 @@ function Profile() {
       ],
     },
     {
-      icon: <FileText className="text-purple-500 w-6 h-6" />,
+      icon: <FileText className="text-purple-500 w-5 sm:w-6 h-5 sm:h-6" />,
       title: "Documents",
       details: tenant.pdf?.length ? tenant.pdf : ["No documents uploaded"],
     },
@@ -111,14 +120,20 @@ function Profile() {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
-      <Navbar className="z-10" />
+      <Navbar
+        sidebarOpen={sidebarOpen}
+        setSidebarOpen={setSidebarOpen}
+        className="z-10"
+      />
 
       <div className="flex flex-1">
-        <div className="hidden md:block md:w-64 lg:w-72 flex-shrink-0">
-          <SideBar />
-        </div>
+        <SideBar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 space-y-6">
+        <main
+          className={`flex-1 p-4 sm:p-6 lg:p-8 space-y-6 transition-all duration-300 ${
+            sidebarOpen ? "lg:ml-64 ml-0" : "lg:ml-64 ml-0"
+          }`}
+        >
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <h1 className="text-xl sm:text-2xl font-semibold">
               Tenant Profile
@@ -131,7 +146,7 @@ function Profile() {
               {cards.map((card, index) => (
                 <div
                   key={index}
-                  className="bg-white shadow-md rounded-2xl p-4 sm:p-6 h-48 flex items-start space-x-4 cursor-pointer hover:shadow-lg transition-shadow"
+                  className="bg-white shadow-md rounded-2xl p-4 sm:p-6 h-48 flex items-start space-x-3 sm:space-x-4 cursor-pointer hover:shadow-lg transition-shadow"
                   onClick={() => openModal(card.title, card.details)}
                 >
                   <div className="flex-shrink-0">{card.icon}</div>
@@ -139,7 +154,7 @@ function Profile() {
                     <h3 className="text-base sm:text-lg font-semibold">
                       {card.title}
                     </h3>
-                    <ul className="mt-2 text-sm text-gray-600 space-y-1">
+                    <ul className="mt-2 text-xs sm:text-sm text-gray-600 space-y-1">
                       {card.details.map((detail, i) => (
                         <li key={i} className="truncate">
                           {detail}
@@ -155,21 +170,21 @@ function Profile() {
           {/* Modal */}
           {isModalOpen && (
             <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-              <div className="bg-white rounded-lg p-4 sm:p-6 w-full max-w-md relative max-h-[80vh] overflow-y-auto">
+              <div className="bg-white rounded-lg p-4 sm:p-6 w-full max-w-[90%] sm:max-w-md relative max-h-[80vh] overflow-y-auto">
                 <button
                   onClick={closeModal}
                   className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
                 >
-                  <X className="w-5 h-5" />
+                  <X className="w-4 sm:w-5 h-4 sm:h-5" />
                 </button>
                 <h2 className="text-lg sm:text-xl font-semibold mb-4 flex items-center space-x-2">
-                  <User className="w-5 h-5 text-blue-500" />
+                  <User className="w-4 sm:w-5 h-4 sm:h-5 text-blue-500" />
                   <span>{modalContent.title}</span>
                 </h2>
-                <ul className="space-y-2 text-gray-700 text-sm">
+                <ul className="space-y-2 text-gray-700 text-xs sm:text-sm">
                   {modalContent.details.map((item, index) => (
                     <li key={index} className="flex items-center space-x-2">
-                      <FileText className="w-4 h-4 text-gray-400" />
+                      <FileText className="w-3 sm:w-4 h-3 sm:h-4 text-gray-400" />
                       <span>{item}</span>
                     </li>
                   ))}

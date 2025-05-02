@@ -2,14 +2,24 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Logo from "../../src/assets/logo.png";
-import { CreditCard, Wrench, User, LogOut, Menu, X } from "lucide-react";
+import {
+  CreditCard,
+  Wrench,
+  User,
+  LogOut,
+  X,
+  Menu,
+  Home,
+  Info,
+  Mail,
+} from "lucide-react";
 import { endpoint } from "../apiEndpoint";
 import { ToastContainer, toast, Bounce } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function SideBar() {
+  const [showSidebar, setShowSidebar] = useState(false);
   const [firstName, setFirstName] = useState("");
-  const [isOpen, setIsOpen] = useState(false); // State for mobile sidebar toggle
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -51,30 +61,21 @@ function SideBar() {
     fetchUser();
   }, []);
 
-  // Toggle sidebar on mobile
-  const toggleSidebar = () => {
-    setIsOpen((prev) => !prev);
-  };
-
   return (
     <>
-      {/* Hamburger Menu for Mobile */}
       <button
-        className="fixed top-4 left-4 z-50 lg:hidden p-2 bg-white rounded-md shadow-md"
-        onClick={toggleSidebar}
+        onClick={() => setShowSidebar(!showSidebar)}
+        className="block lg:hidden fixed top-4 left-4 z-50 p-2 bg-white rounded-md shadow-md"
       >
-        {isOpen ? (
-          <X className="w-6 h-6 text-gray-700" />
-        ) : (
-          <Menu className="w-6 h-6 text-gray-700" />
-        )}
+        {showSidebar ? <X size={24} /> : <Menu size={24} />}
       </button>
 
-      {/* Sidebar */}
       <aside
-        className={`fixed left-0 top-0 h-full w-64 sm:w-72 bg-white p-4 rounded-tr-2xl rounded-br-2xl shadow-md flex flex-col justify-between transition-transform duration-300 lg:transform-none ${
-          isOpen ? "translate-x-0" : "-translate-x-full"
-        } lg:translate-x-0 z-40`}
+        className={`fixed left-0 top-0 h-full w-64 bg-white p-4 rounded-tr-2xl rounded-br-2xl shadow-sm flex flex-col justify-between transition-transform duration-300 z-40
+          ${showSidebar ? "translate-x-0" : "-translate-x-full"}
+          md:w-72 
+          lg:translate-x-0
+        `}
       >
         <div>
           <ToastContainer
@@ -112,6 +113,26 @@ function SideBar() {
           <ul className="space-y-2 text-gray-700 text-sm">
             <li>
               <a
+                href="/home"
+                className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                  location.pathname === "/home"
+                    ? "text-blue-500 bg-blue-100"
+                    : "hover:bg-blue-100"
+                }`}
+              >
+                <Home
+                  className={`w-6 h-6 ${
+                    location.pathname === "/home"
+                      ? "text-blue-500 bg-blue-100"
+                      : ""
+                  }`}
+                />
+                <span>Home</span>
+              </a>
+            </li>
+
+            <li>
+              <a
                 href="/payments"
                 className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
                   location.pathname === "/payments"
@@ -129,6 +150,7 @@ function SideBar() {
                 <span>Rent Payments</span>
               </a>
             </li>
+
             <li>
               <a
                 href="/maintenance-requests"
@@ -165,10 +187,46 @@ function SideBar() {
                 <span>Profile</span>
               </a>
             </li>
+
+            <li>
+              <a
+                href="/contact"
+                className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                  location.pathname === "/contact"
+                    ? "text-blue-500 bg-blue-100"
+                    : "hover:bg-blue-100"
+                }`}
+              >
+                <Mail
+                  className={`w-6 h-6 ${
+                    location.pathname === "/contact" ? "text-blue-500" : ""
+                  }`}
+                />
+                <span>Contact</span>
+              </a>
+            </li>
+
+            <li>
+              <a
+                href="/about"
+                className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                  location.pathname === "/about"
+                    ? "text-blue-500 bg-blue-100"
+                    : "hover:bg-blue-100"
+                }`}
+              >
+                <Info
+                  className={`w-6 h-6 ${
+                    location.pathname === "/about" ? "text-blue-500" : ""
+                  }`}
+                />
+                <span>About Us</span>
+              </a>
+            </li>
             <li>
               <a
                 onClick={handleLogout}
-                className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-red-200 transition-colors cursor-pointer"
+                className="flex items-center gap-3 px-3 py-2 rounded-lg bg-red-50 hover:bg-red-200 transition-colors cursor-pointer"
               >
                 <LogOut className="w-6 h-6" />
                 <span>Logout</span>
@@ -177,14 +235,6 @@ function SideBar() {
           </ul>
         </div>
       </aside>
-
-      {/* Overlay for Mobile */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-30 lg:hidden"
-          onClick={toggleSidebar}
-        ></div>
-      )}
     </>
   );
 }

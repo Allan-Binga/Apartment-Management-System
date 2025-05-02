@@ -312,6 +312,10 @@ const registerLandlord = async (req, res) => {
 //Landlord Login
 const loginLandlord = async (req, res) => {
   const { email, password } = req.body;
+
+  if(req.cookies && req.cookies.landlordSession) {
+    return res.status(400).json({message: "You are already logged in."})
+  }
   try {
     //Check if landlord exists
     const checkLandlordQuery = "SELECT * FROM landlords WHERE email = $1";

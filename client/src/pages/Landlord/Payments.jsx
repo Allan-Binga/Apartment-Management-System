@@ -7,6 +7,7 @@ import { endpoint } from "../../apiEndpoint";
 import axios from "axios";
 
 function LandlordPayments() {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -43,13 +44,15 @@ function LandlordPayments() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <Navbar className="z-10" />
+    <div className="flex flex-col min-h-screen bg-gray-50">
+      <Navbar
+        className="z-10"
+        sidebarOpen={sidebarOpen}
+        setSidebarOpen={setSidebarOpen}
+      />
 
       <div className="flex flex-1">
-        <div className="hidden md:block">
-          <Sidebar />
-        </div>
+        <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
         <main className="flex-1 p-4 md:pl-80 bg-gray-50">
           <div className="max-w-full sm:max-w-3xl md:max-w-4xl mx-auto space-y-6 sm:space-y-8">
@@ -93,7 +96,9 @@ function LandlordPayments() {
                       payments.map((payment, index) => (
                         <tr key={index} className="border-b border-gray-200">
                           <td className="px-4 py-2">{payment.tenantname}</td>
-                          <td className="px-4 py-2">{payment.apartmentnumber}</td>
+                          <td className="px-4 py-2">
+                            {payment.apartmentnumber}
+                          </td>
                           <td className="px-4 py-2">
                             {formatDate(payment.paymentdate)}
                           </td>

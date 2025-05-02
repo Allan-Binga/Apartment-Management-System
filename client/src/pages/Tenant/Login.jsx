@@ -34,11 +34,13 @@ function TenantLogin() {
       });
 
       const data = await response.json();
-      localStorage.setItem("tenantId", data.tenant.id);
 
       if (!response.ok) {
         throw new Error(data.message || "Login failed");
       }
+
+      localStorage.setItem("tenantId", data.tenant.id);
+
       toast.success("Login successful!", {
         className:
           "bg-green-100 text-green-800 font-medium rounded-md p-3 shadow",

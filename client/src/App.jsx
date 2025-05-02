@@ -22,6 +22,7 @@ import LandlordPayments from "./pages/Landlord/Payments";
 import Reports from "./pages/Landlord/Reports";
 import Dashboard from "./pages/Landlord/Dashboard";
 import Tenants from "./pages/Landlord/Tenants";
+import LandingPage from "./pages/Landing/Landing";
 
 
 function App() {
@@ -30,8 +31,9 @@ function App() {
       <Toaster position="top-center" toastOptions={{ duration: 1800 }} />
       <Routes>
         {/* Redirect from the root path to /login/tenant */}
-        <Route path="/" element={<Navigate to="/login/tenant" />} />
+        <Route path="/" element={<Navigate to="/landing" />} />
         <Route path="/home" element={<Home/>}/>
+        <Route path="/landing" element={<LandingPage/>}/>
         <Route path="/signup/tenant" element={<TenantRegister />} />
         <Route path="/login/tenant" element={<TenantLogin />} />
         <Route path="/signup/landlord" element={<LandlordRegister />} />

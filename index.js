@@ -15,6 +15,7 @@ const tenantRoute = require("./routes/tenants");
 const reportRoute = require("./routes/reports");
 const receiptsRoute = require("./routes/receipts");
 
+
 require("./config/db");
 
 dotenv.config();

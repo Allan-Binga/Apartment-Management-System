@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { CreditCard, History, CalendarDays, X } from "lucide-react";
+import { CreditCard, History, CalendarDays, X, Menu } from "lucide-react";
 import axios from "axios";
 import { endpoint } from "../../apiEndpoint";
 import SideBar from "../../components/SideBar";
@@ -10,6 +10,7 @@ import StripeLogo from "../../assets/stripe.png";
 import Spinner from "../../components/Spinner";
 
 function Payments() {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showMpesaModal, setShowMpesaModal] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -103,11 +104,13 @@ function Payments() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Navbar className="z-10" />
+      <Navbar
+        sidebarOpen={sidebarOpen}
+        setSidebarOpen={setSidebarOpen}
+        className="z-10"
+      />
       <div className="flex flex-1">
-        <div className="hidden md:block">
-          <SideBar />
-        </div>
+        <SideBar />
 
         <main className="flex-1 p-4 md:pl-80 bg-gray-50">
           <div className="max-w-full sm:max-w-3xl md:max-w-4xl mx-auto space-y-6 sm:space-y-8">

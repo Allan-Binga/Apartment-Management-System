@@ -17,6 +17,7 @@ import Spinner from "../../components/Spinner";
 import axios from "axios";
 
 function Maintenance() {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [requests, setRequests] = useState([]);
   const [formData, setFormData] = useState({
     category: "",
@@ -27,7 +28,6 @@ function Maintenance() {
   const [fetchError, setFetchError] = useState("");
   const [success, setSuccess] = useState("");
   const [requestsLoading, setRequestsLoading] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const categories = [
     "Plumbing",
@@ -144,7 +144,7 @@ function Maintenance() {
       />
 
       <div className="flex flex-1 bg-gray-50 w-full">
-        <SideBar/>
+        <SideBar />
         <main className="flex-1 p-4 sm:p-6 md:ml-[calc(18rem+2rem)]">
           <h2 className="text-xl sm:text-2xl font-semibold mb-4 flex items-center gap-2">
             <Wrench className="w-6 h-6 sm:w-7 sm:h-7" /> Maintenance Requests
