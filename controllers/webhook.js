@@ -8,10 +8,6 @@ const handleWebhook = async (req, res) => {
   const endpointSecret = process.env.STRIPE_WEBHOOK;
   const sig = req.headers["stripe-signature"];
 
-  const tenantId = session.metadata.tenantId;
-  console.log(tenantId);
-  I;
-
   let event;
 
   try {
@@ -25,16 +21,30 @@ const handleWebhook = async (req, res) => {
     case "checkout.session.completed":
       const session = event.data.object;
       const paymentId = session.metadata?.paymentId;
+      const apartmentNumber = session.metadata?.apartmentNumber; // Assuming apartmentNumber is in metadata
 
       try {
         if (!paymentId) {
           throw new Error("Payment ID not found in session metadata");
         }
+        if (!apartmentNumber) {
+          throw new Error("Apartment number not found in session metadata");
+        }
+
+        // Fetch tenant ID using apartmentnumber
+        const tenantIdQuery = `SELECT id FROM tenants WHERE apartmentnumber = $1`;
+        const tenantIdResult = await client.query(tenantIdQuery, [apartmentNumber]);
+
+        if (tenantIdResult.rows.length === 0) {
+          throw new Error("Tenant not found for the given apartment number");
+        }
+
+        const tenantId = tenantIdResult.rows[0].id;
 
         // Update payment status
         const updateQuery = `UPDATE payment SET paymentstatus = $1 WHERE paymentid = $2`;
         await client.query(updateQuery, ["paid", paymentId]);
-        // console.log(`Payment ${paymentId} marked as paid`);
+        console.log(`Payment ${paymentId} marked as paid`);
 
         // Fetch tenant details
         const tenantQuery = `SELECT firstname, lastname, apartmentnumber, email FROM tenants WHERE id = $1`;
@@ -47,7 +57,7 @@ const handleWebhook = async (req, res) => {
         const {
           firstname,
           lastname,
-          apartmentnumber: apartmentNumber,
+          apartmentnumber: fetchedApartmentNumber,
           email: tenantEmail,
         } = tenantResult.rows[0];
         const fullName = `${firstname} ${lastname}`;
@@ -58,15 +68,14 @@ const handleWebhook = async (req, res) => {
         // Send the rent payment confirmation email
         await sendRentPaymentEmail(tenantEmail, {
           amountPaid: session.amount_total / 100, // Convert from cents to KES
-          apartmentNumber,
+          apartmentNumber: fetchedApartmentNumber,
           paymentDate,
         });
-        // console.log(`Rent payment confirmation email sent to ${tenantEmail}`);
 
         // Prepare payment report data
         const paymentReportData = {
           tenant_name: fullName,
-          apartment_id: apartmentNumber,
+          apartment_id: fetchedApartmentNumber,
           amount_paid: session.amount_total / 100, // Convert from cents to dollars
           payment_date: paymentDate,
           payment_status: "paid",
