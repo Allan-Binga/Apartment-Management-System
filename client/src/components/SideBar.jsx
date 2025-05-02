@@ -24,6 +24,7 @@ function SideBar() {
   const navigate = useNavigate();
 
   // Handle Logout
+  // Handle Logout
   const handleLogout = async () => {
     try {
       const response = await axios.post(
@@ -35,8 +36,13 @@ function SideBar() {
       if (response.status === 200) {
         document.cookie = "tenantSession=; Max-Age=0; path=/;";
         localStorage.removeItem("tenantId");
+
         toast.success("Successfully logged out.");
-        navigate("/login/tenant");
+
+        // Delay navigation by 2 seconds (long enough for toast to show)
+        setTimeout(() => {
+          navigate("/login/tenant");
+        }, 2000);
       } else {
         toast.error("You are not logged in.");
       }

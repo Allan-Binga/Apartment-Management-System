@@ -27,13 +27,16 @@ function Home() {
 
   useEffect(() => {
     const fetchDetails = async () => {
+      const tenantId = localStorage.getItem("tenantId");
+      if (!tenantId) return;
+
       try {
-        const data = await getTenantDetails();
-        setTenant(data);
+        const data = await axios.get(`${endpoint}/users/tenants/${tenantId}`);
+        setTenant(data.data);
       } catch (error) {
         const errMsg =
           error?.response?.data?.message || error.message || "Unknown error";
-        throw errMsg;
+        console.error("Failed to fetch tenant:", errMsg);
       }
     };
 

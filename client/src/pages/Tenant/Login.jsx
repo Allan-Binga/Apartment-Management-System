@@ -49,9 +49,20 @@ function TenantLogin() {
         navigate("/home");
       }, 5000);
     } catch (error) {
-      toast.error(error.message || "Something went wrong", {
-        className: "bg-red-100 text-red-800 font-medium rounded-md p-3 shadow",
-      });
+      const errorMessage = error.message?.toLowerCase?.();
+
+      if (errorMessage?.includes("already logged in")) {
+        toast.info("You are already logged in.", {
+          className:
+            "bg-blue-100 text-blue-800 font-medium rounded-md p-3 shadow",
+        });
+        navigate("/home");
+      } else {
+        toast.error(error.message || "Something went wrong", {
+          className:
+            "bg-red-100 text-red-800 font-medium rounded-md p-3 shadow",
+        });
+      }
     } finally {
       setLoading(false);
     }

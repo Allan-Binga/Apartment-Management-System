@@ -5,7 +5,7 @@ import { endpoint } from "../../apiEndpoint";
 import SideBar from "../../components/SideBar";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
-import MpesaLogo from "../../assets/mpesa.png";
+import LinkLogo from "../../assets/link.png"
 import StripeLogo from "../../assets/stripe.png";
 import Spinner from "../../components/Spinner";
 
@@ -267,16 +267,16 @@ function Payments() {
                 {loadingCheckout && <Spinner />}
               </button>
               <button
-                onClick={handleMpesaClick}
+                onClick={handleCheckout}
                 className="w-full flex items-center gap-2 sm:gap-3 bg-green-600 text-white py-4 sm:py-6 px-3 sm:px-4 rounded-xl hover:bg-green-700 transition cursor-pointer"
               >
                 <img
-                  src={MpesaLogo}
-                  alt="M-Pesa"
+                  src={LinkLogo}
+                  alt="Link"
                   className="h-8 w-12 sm:h-12 sm:w-18 rounded-sm"
                 />
                 <span className="flex-1 text-left text-sm sm:text-base">
-                  Pay with M-Pesa
+                  Pay with Link
                 </span>
               </button>
             </div>

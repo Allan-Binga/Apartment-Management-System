@@ -25,6 +25,7 @@ function TenantRegister() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({});
   const navigate = useNavigate();
 
   //Apartment options
@@ -103,28 +104,31 @@ function TenantRegister() {
             setError("");
             setSuccess("");
             setLoading(true);
-
             try {
               const res = await fetch(`${endpoint}/auth/register/tenant`, {
                 method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData),
               });
 
               const data = await res.json();
 
               if (!res.ok) {
-                throw new Error(data.message || "Something went wrong.");
+                // Handle password-specific errors gracefully
+                if (data.message?.toLowerCase().includes("password")) {
+                  setFieldErrors({ password: data.message });
+                } else {
+                  setFieldErrors({});
+                  toast.error(data.message || "Something went wrong.");
+                }
+                return;
               }
 
+              setFieldErrors({});
               toast.success(data.message);
-              setTimeout(() => {
-                navigate("/login/tenant");
-              }, 3500);
+              setTimeout(() => navigate("/login/tenant"), 3500);
             } catch (err) {
-              toast.error(err.message);
+              toast.error("Server error. Please try again.");
             } finally {
               setLoading(false);
             }
@@ -159,7 +163,6 @@ function TenantRegister() {
               />
             </div>
           </div>
-
           <div>
             <label className="block text-sm font-medium text-gray-700">
               Email
@@ -173,7 +176,6 @@ function TenantRegister() {
               className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2.5 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-
           <div>
             <label className="block text-sm font-medium text-gray-700">
               Phone Number
@@ -190,7 +192,6 @@ function TenantRegister() {
               inputClass="!w-full border border-gray-300 rounded-md shadow-sm py-2.5 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-
           <div>
             <label className="block text-sm font-medium text-gray-700">
               Apartment Number
@@ -211,12 +212,14 @@ function TenantRegister() {
               ))}
             </select>
           </div>
-
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
               <label className="block text-sm font-medium text-gray-700">
                 Lease Start Date
               </label>
+              <span className="block text-xs text-gray-500 mt-1">
+               Not prior to today
+              </span>
               <input
                 type="date"
                 name="leaseStartDate"
@@ -231,6 +234,9 @@ function TenantRegister() {
               <label className="block text-sm font-medium text-gray-700">
                 Lease End Date
               </label>
+              <span className="block text-xs text-gray-500 mt-1">
+                Must be at least 1 month after the lease start date
+              </span>
               <input
                 type="date"
                 name="leaseEndDate"
@@ -241,29 +247,40 @@ function TenantRegister() {
               />
             </div>
           </div>
-
-          <div className="relative">
+          <div>
             <label className="block text-sm font-medium text-gray-700">
               Password
             </label>
-            <input
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              type={showPassword ? "text" : "password"}
-              placeholder="Enter your password"
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2.5 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <div
-              className="absolute inset-y-0 right-0 pr-3 flex items-center mt-6 cursor-pointer"
-              onClick={() => setShowPassword((prev) => !prev)}
-            >
-              {showPassword ? (
-                <EyeOff className="h-5 w-5 text-gray-500" />
-              ) : (
-                <Eye className="h-5 w-5 text-gray-500" />
-              )}
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                value={formData.password}
+                onChange={(e) => {
+                  handleChange(e);
+                  setFieldErrors((prev) => ({ ...prev, password: "" })); // Clear error on input
+                }}
+                placeholder="Enter a strong password"
+                className={`mt-1 block w-full border ${
+                  fieldErrors.password ? "border-red-500" : "border-gray-300"
+                } rounded-md shadow-sm py-2.5 px-4 text-sm focus:outline-none focus:ring-2 ${
+                  fieldErrors.password
+                    ? "focus:ring-red-500"
+                    : "focus:ring-blue-500"
+                }`}
+              />
+              <div
+                className="absolute inset-y-0 right-0 flex items-center px-3 cursor-pointer"
+                onClick={() => setShowPassword((prev) => !prev)}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </div>
             </div>
+            {fieldErrors.password && (
+              <p className="text-red-500 text-xs mt-1">
+                {fieldErrors.password}
+              </p>
+            )}
           </div>
 
           <button
@@ -295,7 +312,10 @@ function TenantRegister() {
           </p>
           <p>
             Are you an admin?{" "}
-            <Link to="/login/admin" className="text-blue-500 hover:underline cursor-pointer">
+            <Link
+              to="/login/admin"
+              className="text-blue-500 hover:underline cursor-pointer"
+            >
               Login
             </Link>
           </p>
