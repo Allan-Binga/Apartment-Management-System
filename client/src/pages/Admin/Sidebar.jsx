@@ -115,7 +115,7 @@ function AdminSidebar({ sidebarOpen, setSidebarOpen }) {
                 ),
               },
               {
-                href: "/admin/users",
+                href: "/admin/tenants",
                 label: "Users",
                 icon: (
                   <Users2
@@ -128,7 +128,7 @@ function AdminSidebar({ sidebarOpen, setSidebarOpen }) {
                 ),
               },
               {
-                href: "/admin/properties",
+                href: "/admin/listings",
                 label: "Properties",
                 icon: (
                   <Building

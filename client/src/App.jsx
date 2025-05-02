@@ -24,7 +24,7 @@ import Dashboard from "./pages/Landlord/Dashboard";
 import Tenants from "./pages/Landlord/Tenants";
 import LandingPage from "./pages/Landing/Landing";
 import AdminDashboard from "./pages/Admin/Dashboard";
-
+import AdminListings from "./pages/Admin/AdminListings";
 
 function App() {
   return (
@@ -50,6 +50,7 @@ function App() {
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/home/landlord" element={<LandlordHome />} />
         <Route path="/listings" element={<Listings />} />
+        <Route path="/admin/listings" element={<AdminListings/>} />
         <Route path="/payment/success" element={<SuccessPage />} />
         <Route path="/payment/cancelled" element={<CancelPage />} />
         <Route path="/landlord/payments" element={<LandlordPayments />} />

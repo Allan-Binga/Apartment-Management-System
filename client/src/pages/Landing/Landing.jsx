@@ -35,7 +35,7 @@ function LandingPage() {
           experience.
         </p>
         <div className="mt-8 flex flex-wrap justify-center gap-4">
-          {["tenant", "landlord", "admin"].map((role) => (
+          {["tenant", "landlord"].map((role) => (
             <div key={role} className="flex flex-col items-center gap-3">
               <Link
                 to={`/login/${role}`}
