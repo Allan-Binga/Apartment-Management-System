@@ -17,7 +17,7 @@ const getRequests = async (req, res) => {
 
     res.status(200).json(result.rows);
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     res.status(500).json({ message: "Failed to fetch requests." });
   }
 };
@@ -93,11 +93,11 @@ const createRequest = async (req, res) => {
     const tenant = tenantResult.rows[0];
 
     if (tenant && tenant.email) {
-      //  Step 5: Wiat two minutes and send a maintenance request email
+      //  Step 5: Wait two minutes and send a maintenance request email
       setTimeout(async () => {
         try {
           await sendMaintenanceRequestEmail(tenant.email, request);
-          console.log("Maintenance email sent after 2 minutes");
+          // console.log("Maintenance email sent after 2 minutes");
         } catch (error) {
           console.error("Failed to send maintenance email:", error);
         }
@@ -170,7 +170,7 @@ const completeRequest = async (req, res) => {
 
     // Create the maintenance report
     const report = await createMaintenanceReport(maintenanceReportData);
-    console.log(`Maintenance report created for request ${requestId}`);
+    // console.log(`Maintenance report created for request ${requestId}`);
 
     // Now update the maintenance report with status 'completed'
     const updateStatusQuery = `

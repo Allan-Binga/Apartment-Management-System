@@ -69,6 +69,7 @@ const createRentCheckoutSession = async (req, res) => {
     const paymentId = result.rows[0].paymentid;
 
     //Stripe Session
+    //Stripe Session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items: [
@@ -90,11 +91,13 @@ const createRentCheckoutSession = async (req, res) => {
       metadata: {
         paymentId: paymentId.toString(),
         tenantId: tenantId.toString(),
+        apartmentNumber: apartmentNumber.toString(),
       },
       payment_intent_data: {
         metadata: {
           paymentId: paymentId.toString(),
           tenantId: tenantId.toString(),
+          apartmentNumber: apartmentNumber.toString(),
         },
       },
     });
