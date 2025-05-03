@@ -23,42 +23,4 @@ const authTenant = (req, res, next) => {
   }
 };
 
-// Lanlord ID Middleware
-const authLandlord = (req, res, next) => {
-  try {
-    const token = req.cookies.landlordSession;
-    if (!token) {
-      return res
-        .status(401)
-        .json({ message: "Unauthorized. Please login as landlord." });
-    }
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.landlordId = decoded.landlord;
-    next();
-  } catch (error) {
-    return res
-      .status(403)
-      .json({ message: "Invalid or expired landlord token." });
-  }
-};
-
-//Admin ID Middleware
-const authAdmin = (req, res, next) => {
-  try {
-    const token = req.cookies.adminSession;
-    if (!token) {
-      return res
-        .status(401)
-        .json({ message: "Unauthorized. Please log in as administrator." });
-    }
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.adminId = decoded.admin;
-    next();
-  } catch (error) {
-    return res.status(403).json({ message: "Invalid or expired admin token." });
-  }
-};
-
-module.exports = { authTenant, authLandlord, authAdmin };
+module.exports = { authTenant };

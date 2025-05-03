@@ -1,10 +1,11 @@
 const express = require("express");
 const { getAllPayments, getUsersPayment } = require("../controllers/payments");
-const { authTenant, authLandlord, authAdmin } = require("../middleware/jwt");
+const { authTenant} = require("../middleware/jwt");
+const authAdminOrLandlord = require("../middleware/jwt2")
 
 const router = express.Router();
 
-router.get("/all", authAdmin, authLandlord, getAllPayments);
+router.get("/all", authAdminOrLandlord, getAllPayments);
 router.get("/my-payments", authTenant, getUsersPayment);
 
 module.exports = router;

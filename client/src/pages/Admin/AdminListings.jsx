@@ -36,7 +36,17 @@ function AdminListings() {
   useEffect(() => {
     const fetchListings = async () => {
       const data = await getListings();
-      setListings(data);
+
+      // Normalize listings: If "studio" is in the title, override beds
+      const normalizedListings = data.map((apt) => {
+        const isStudio = apt.title?.toLowerCase().includes("studio");
+        return {
+          ...apt,
+          beds: isStudio ? "studio" : apt.beds,
+        };
+      });
+
+      setListings(normalizedListings);
     };
     fetchListings();
   }, []);
@@ -127,7 +137,7 @@ function AdminListings() {
           {/* Add Apartment Listing Button */}
           <div className="flex justify-end mb-4 sm:mb-6">
             <button
-              className="bg-blue-500 text-white px-4 py-2 rounded-full flex items-center gap-2 shadow-lg hover:bg-blue-600 transition text-sm sm:text-base"
+              className="bg-blue-500 text-white px-4 py-2 rounded-full flex items-center gap-2 shadow-lg hover:bg-blue-600 transition text-sm sm:text-base cursor-pointer"
               onClick={handleAddListingClick}
             >
               <PlusCircle className="w-5 h-5" />
@@ -165,7 +175,7 @@ function AdminListings() {
                           : "bg-gray-100 text-gray-600"
                       }`}
                     >
-                      {apt.leasingstatus ? "Leased" : "Available"}
+                      {apt.leasingstatus === "Leased" ? "Leased" : "Unleased"}
                     </span>
                   </div>
                 </div>
@@ -555,7 +565,7 @@ function AdminListings() {
               <div className="flex justify-end gap-3 sm:gap-4">
                 <button
                   type="submit"
-                  className="bg-blue-500 text-white px-4 sm:px-6 py-2 rounded-md hover:bg-blue-600 text-sm sm:text-base"
+                  className="bg-blue-500 text-white px-4 sm:px-6 py-2 rounded-md hover:bg-blue-600 text-sm sm:text-base cursor-pointer"
                 >
                   Add Listing
                 </button>

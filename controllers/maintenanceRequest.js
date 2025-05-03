@@ -1,6 +1,7 @@
 const client = require("../config/db");
 const { sendMaintenanceRequestEmail } = require("../controllers/emailService");
 const { createMaintenanceReport } = require("../controllers/reports");
+const { createNotification } = require("../controllers/notifications");
 
 //Get all maintenance requests.
 const getRequests = async (req, res) => {
@@ -179,6 +180,12 @@ const completeRequest = async (req, res) => {
       WHERE id = $1;
     `;
     await client.query(updateStatusQuery, [report.id]);
+
+    //Create a maintenance request
+    await createNotification(
+      request.tenant_id,
+      "You confirmed the request as completed. Were you satisfied with the service?"
+    );
 
     res.status(200).json({
       message: "Request marked as completed and maintenance report created.",

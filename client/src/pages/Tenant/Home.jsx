@@ -12,6 +12,7 @@ function Home() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [tenant, setTenant] = useState(null);
   const [listings, setListings] = useState([]);
+  const [notifications, setNotifications] = useState([]);
 
   // Get tenant's details
   const getTenantDetails = async () => {
@@ -43,6 +44,19 @@ function Home() {
     fetchDetails();
   }, []);
 
+  useEffect(() => {
+    axios
+      .get(`${endpoint}/notifications/my-notifications`, {
+        withCredentials: true,
+      })
+      .then((res) => {
+        setNotifications(res.data);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch notifications:", err);
+      });
+  }, []);
+
   const getListings = async () => {
     try {
       const response = await axios.get(`${endpoint}/listings/all-listings`);
@@ -55,7 +69,17 @@ function Home() {
   useEffect(() => {
     const fetchListings = async () => {
       const data = await getListings();
-      setListings(data);
+
+      // Normalize listings: If "studio" is in the title, override beds
+      const normalizedListings = data.map((apt) => {
+        const isStudio = apt.title?.toLowerCase().includes("studio");
+        return {
+          ...apt,
+          beds: isStudio ? "studio" : apt.beds,
+        };
+      });
+
+      setListings(normalizedListings);
     };
     fetchListings();
   }, []);
@@ -112,7 +136,7 @@ function Home() {
               <div>
                 <p className="text-sm text-gray-500">New Notifications</p>
                 <p className="text-base sm:text-lg font-semibold text-gray-800">
-                  3 Alerts
+                  {notifications.length}
                 </p>
               </div>
             </div>
@@ -161,7 +185,7 @@ function Home() {
                           : "bg-gray-100 text-gray-600"
                       }`}
                     >
-                      {apt.leasingstatus ? "Leased" : "Available"}
+                      {apt.leasingstatus === "Leased" ? "Leased" : "Unleased"}
                     </span>
                   </div>
                 </div>

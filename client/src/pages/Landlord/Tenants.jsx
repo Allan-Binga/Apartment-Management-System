@@ -11,6 +11,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 function Tenants() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [leaseEndDateError, setLeaseEndDateError] = useState("");
   const [tenants, setTenants] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
@@ -75,6 +76,8 @@ function Tenants() {
 
   // API Call to Update tenant details
   const handleUpdate = async () => {
+    setLeaseEndDateError(""); // clear previous error
+
     if (!updatedApartmentNumber.trim()) {
       alert("Please enter a valid apartment number.");
       return;
@@ -98,7 +101,9 @@ function Tenants() {
       closeModal();
     } catch (error) {
       console.error("Failed to update tenant:", error);
-      toast.error(error.response?.data?.message || "Failed to update tenant.");
+      const errMsg =
+        error.response?.data?.message || "Failed to update tenant.";
+      setLeaseEndDateError(errMsg); // set error under the input
     }
   };
 
@@ -222,7 +227,7 @@ function Tenants() {
 
       {/* Update Tenant Modal */}
       {isUpdateModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex justify-center items-center z-50">
+        <div className="fixed inset-0  backdrop-blur-sm bg-white/30 flex justify-center items-center z-50">
           <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg w-[90%] max-w-md space-y-4">
             <h2 className="text-lg sm:text-xl font-bold text-gray-800 mb-2">
               Update Tenant Details
@@ -254,8 +259,17 @@ function Tenants() {
                   type="date"
                   value={updatedLeaseEndDate}
                   onChange={(e) => setUpdatedLeaseEndDate(e.target.value)}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className={`w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 ${
+                    leaseEndDateError
+                      ? "border-red-500 focus:ring-red-500"
+                      : "border-gray-300 focus:ring-blue-500"
+                  }`}
                 />
+                {leaseEndDateError && (
+                  <p className="text-sm text-red-600 mt-1">
+                    {leaseEndDateError}
+                  </p>
+                )}
               </div>
             </div>
             <div className="flex justify-end gap-2 pt-2">
@@ -278,7 +292,7 @@ function Tenants() {
 
       {/* Delete Tenant Modal */}
       {isDeleteModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex justify-center items-center z-50">
+        <div className="fixed inset-0  backdrop-blur-sm bg-white/30  flex justify-center items-center z-50">
           <div className="bg-white rounded-xl p-4 sm:p-6 shadow-lg w-[90%] max-w-md space-y-4">
             <h2 className="text-lg sm:text-xl font-bold text-red-600">
               Delete Tenant

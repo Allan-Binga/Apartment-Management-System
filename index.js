@@ -14,7 +14,7 @@ const emailRoute = require("./routes/emailService");
 const tenantRoute = require("./routes/tenants");
 const reportRoute = require("./routes/reports");
 const receiptsRoute = require("./routes/receipts");
-
+const notificationRoute = require("./routes/notifications")
 
 require("./config/db");
 
@@ -60,6 +60,7 @@ app.use("/murandi/v1/maintenance", maintenanceRequestRoute);
 app.use("/murandi/v1/checkout", checkoutRoute);
 app.use("/murandi/v1/reports", reportRoute);
 app.use("/murandi/v1/receipts", receiptsRoute);
+app.use("/murandi/v1/notifications", notificationRoute)
 
 if (process.env.NODE_ENV === "production") {
   const clientDistPath = path.join(__dirname, "client", "dist");

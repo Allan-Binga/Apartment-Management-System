@@ -6,15 +6,16 @@ const {
   updateListing,
   deleteListing,
 } = require("../controllers/listings");
-const { authLandlord, authTenant } = require("../middleware/jwt");
+const {  authTenant } = require("../middleware/jwt");
+const authAdminOrLandlord = require("../middleware/jwt2")
 
 const router = express.Router();
 
 //Routes
 router.get("/all-listings", getListings);
 router.get("/my-listing", authTenant, getUserLeasedApartment);
-router.post("/create-listing", authLandlord, createListing);
-router.put("/update-listing/:id", authLandlord, updateListing);
-router.delete("/delete-listing/:id", authLandlord, deleteListing);
+router.post("/create-listing", authAdminOrLandlord, createListing);
+router.put("/update-listing/:id", updateListing);
+router.delete("/delete-listing/:id",  deleteListing);
 
 module.exports = router;

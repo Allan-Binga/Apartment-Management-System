@@ -36,8 +36,19 @@ function Listings() {
   useEffect(() => {
     const fetchListings = async () => {
       const data = await getListings();
-      setListings(data);
+
+      // Normalize listings: If "studio" is in the title, override beds
+      const normalizedListings = data.map((apt) => {
+        const isStudio = apt.title?.toLowerCase().includes("studio");
+        return {
+          ...apt,
+          beds: isStudio ? "studio" : apt.beds,
+        };
+      });
+
+      setListings(normalizedListings);
     };
+
     fetchListings();
   }, []);
 
@@ -63,16 +74,24 @@ function Listings() {
   };
 
   const createListing = async () => {
-    setIsAddListingOpen(false);
+    console.log("Submitting createListing with formData:", formData); // Log formData
     try {
-      await axios.post(`${endpoint}/listings/create-listing`, formData);
+      const response = await axios.post(
+        `${endpoint}/listings/create-listing`,
+        formData, // Send formData as the data payload
+        { withCredentials: true } // Config object
+      );
+      console.log("createListing response:", response.data); // Log response
       setIsAddListingOpen(false);
       const updatedListings = await getListings();
       setListings(updatedListings);
       toast.success("Listing added successfully.");
     } catch (error) {
-      console.error(error);
-      toast.error("Failed to add listing.");
+      console.error("Error in createListing:", {
+        message: error.message,
+        response: error.response?.data,
+      });
+      toast.error(" RafaFailed to add listing.");
     }
   };
 
@@ -107,6 +126,21 @@ function Listings() {
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={true}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        toastClassName="rounded-lg bg-white shadow-md border-l-4 border-blue-500 p-4 text-sm text-gray-800"
+        bodyClassName="flex items-center"
+        progressClassName="bg-blue-400 h-1 rounded"
+      />
       <Navbar
         className="z-10"
         sidebarOpen={sidebarOpen}
@@ -127,7 +161,7 @@ function Listings() {
           {/* Add Apartment Listing Button */}
           <div className="flex justify-end mb-4 sm:mb-6">
             <button
-              className="bg-blue-500 text-white px-4 py-2 rounded-full flex items-center gap-2 shadow-lg hover:bg-blue-600 transition text-sm sm:text-base"
+              className="bg-blue-500 text-white px-4 py-2 rounded-full flex items-center gap-2 shadow-lg hover:bg-blue-600 transition text-sm sm:text-base cursor-pointer"
               onClick={handleAddListingClick}
             >
               <PlusCircle className="w-5 h-5" />
@@ -165,7 +199,7 @@ function Listings() {
                           : "bg-gray-100 text-gray-600"
                       }`}
                     >
-                      {apt.leasingstatus ? "Leased" : "Available"}
+                      {apt.leasingstatus === "Leased" ? "Leased" : "Unleased"}
                     </span>
                   </div>
                 </div>
@@ -564,8 +598,6 @@ function Listings() {
           </div>
         </div>
       )}
-
-      <ToastContainer />
     </div>
   );
 }

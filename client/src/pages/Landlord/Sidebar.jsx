@@ -59,13 +59,28 @@ function LandlordSidebar({ sidebarOpen, setSidebarOpen }) {
 
   return (
     <>
+      {" "}
+      <ToastContainer
+        position="top-right"
+        autoClose={3500}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        toastClassName="rounded-lg bg-white shadow-md border-l-4 border-blue-500 p-4 text-sm text-gray-800"
+        bodyClassName="flex items-center"
+        progressClassName="bg-blue-400 h-1 rounded"
+      />
       <button
         onClick={() => setSidebarOpen(!sidebarOpen)}
         className="block lg:hidden fixed top-4 left-4 z-50 p-2 bg-white rounded-md shadow-md"
       >
         {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
       </button>
-
       <aside
         className={`fixed left-0 top-0 h-full w-64 bg-white p-4 rounded-tr-2xl rounded-br-2xl shadow-sm flex flex-col justify-between transition-transform duration-300 z-40
           ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
@@ -74,22 +89,6 @@ function LandlordSidebar({ sidebarOpen, setSidebarOpen }) {
         `}
       >
         <div>
-          <ToastContainer
-            position="top-right"
-            autoClose={3500}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme="light"
-            toastClassName="rounded-lg bg-white shadow-md border-l-4 border-blue-500 p-4 text-sm text-gray-800"
-            bodyClassName="flex items-center"
-            progressClassName="bg-blue-400 h-1 rounded"
-          />
-
           {/* Logo */}
           <div className="mb-6 flex justify-center">
             <img src={Logo} alt="Apartment Logo" className="h-45 w-45" />

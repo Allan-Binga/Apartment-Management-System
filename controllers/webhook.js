@@ -3,6 +3,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const client = require("../config/db");
 const { createPaymentReport } = require("../controllers/reports");
 const { sendRentPaymentEmail } = require("../controllers/emailService");
+const {createNotification} = require("../controllers/notifications")
 
 const handleWebhook = async (req, res) => {
   const endpointSecret = process.env.STRIPE_WEBHOOK;
@@ -71,6 +72,8 @@ const handleWebhook = async (req, res) => {
           apartmentNumber: fetchedApartmentNumber,
           paymentDate,
         });
+
+        await createNotification(tenantId, "Your rent payment was successful. Please check your email for a receipt.")
 
         // Prepare payment report data
         const paymentReportData = {

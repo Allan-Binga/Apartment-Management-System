@@ -11,7 +11,7 @@ import {
   Menu,
   Home,
   Info,
-  Mail,
+  MessageCircle,
 } from "lucide-react";
 import { endpoint } from "../apiEndpoint";
 import { ToastContainer, toast, Bounce } from "react-toastify";
@@ -75,7 +75,19 @@ function SideBar() {
       >
         {showSidebar ? <X size={24} /> : <Menu size={24} />}
       </button>
-
+      <ToastContainer
+        position="top-right"
+        autoClose={3500}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        progressClassName="bg-blue-400 h-1 rounded"
+      />
       <aside
         className={`fixed left-0 top-0 h-full w-64 bg-white p-4 rounded-tr-2xl rounded-br-2xl shadow-sm flex flex-col justify-between transition-transform duration-300 z-40
           ${showSidebar ? "translate-x-0" : "-translate-x-full"}
@@ -84,22 +96,6 @@ function SideBar() {
         `}
       >
         <div>
-          <ToastContainer
-            position="top-right"
-            autoClose={3500}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme="light"
-            toastClassName="rounded-lg bg-white shadow-md border-l-4 border-blue-500 p-4 text-sm text-gray-800"
-            bodyClassName="flex items-center"
-            progressClassName="bg-blue-400 h-1 rounded"
-          />
-
           {/* Logo */}
           <div className="mb-6 flex justify-center">
             <img src={Logo} alt="Apartment Logo" className="h-45 w-45" />
@@ -196,19 +192,19 @@ function SideBar() {
 
             <li>
               <a
-                href="/contact"
+                href="/messages"
                 className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
-                  location.pathname === "/contact"
+                  location.pathname === "/messages"
                     ? "text-blue-500 bg-blue-100"
                     : "hover:bg-blue-100"
                 }`}
               >
-                <Mail
+                <MessageCircle
                   className={`w-6 h-6 ${
-                    location.pathname === "/contact" ? "text-blue-500" : ""
+                    location.pathname === "/messages" ? "text-blue-500" : ""
                   }`}
                 />
-                <span>Contact</span>
+                <span>Messages</span>
               </a>
             </li>
 

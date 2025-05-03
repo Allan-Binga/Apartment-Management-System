@@ -46,6 +46,17 @@ const createListing = async (req, res) => {
     const { title, description, price, square_feet, image, apartmentnumber } =
       req.body;
 
+    // Log the incoming request body
+    console.log("Received createListing request:", {
+      title,
+      description,
+      price,
+      square_feet,
+      image,
+      apartmentnumber,
+      body: req.body, // Log the entire body for completeness
+    });
+
     // Validate input
     if (
       !title ||
@@ -55,8 +66,35 @@ const createListing = async (req, res) => {
       !image ||
       !apartmentnumber
     ) {
+      console.log("Validation failed. Missing fields:", {
+        title: !!title,
+        description: !!description,
+        price: !!price,
+        square_feet: !!square_feet,
+        image: !!image,
+        apartmentnumber: !!apartmentnumber,
+      });
       return res.status(400).json({
         message: "All fields are required.",
+        missingFields: {
+          title: !title,
+          description: !description,
+          price: !price,
+          square_feet: !square_feet,
+          image: !image,
+          apartmentnumber: !apartmentnumber,
+        },
+      });
+    }
+
+    // Additional type validation (optional but recommended)
+    if (isNaN(price) || isNaN(square_feet)) {
+      console.log("Validation failed. Invalid types:", {
+        price: isNaN(price) ? "Not a number" : price,
+        square_feet: isNaN(square_feet) ? "Not a number" : square_feet,
+      });
+      return res.status(400).json({
+        message: "Price and square_feet must be valid numbers.",
       });
     }
 
@@ -84,13 +122,26 @@ const createListing = async (req, res) => {
       apartmentnumber,
     ]);
 
+    // Log the successful insertion
+    console.log("Listing created successfully:", result.rows[0]);
+
     res.status(201).json({
       message: "Listing created successfully.",
       listing: result.rows[0],
     });
   } catch (error) {
-    console.error("Error creating listing:", error);
-    res.status(500).json({ message: "Could not create listing." });
+    // Detailed error logging
+    console.error("Error creating listing:", {
+      message: error.message,
+      stack: error.stack,
+      code: error.code, // PostgreSQL error code, if applicable
+      detail: error.detail,
+      hint: error.hint,
+    });
+    res.status(500).json({
+      message: "Could not create listing.",
+      error: error.message,
+    });
   }
 };
 

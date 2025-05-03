@@ -100,34 +100,16 @@ const getSingleTenant = async (req, res) => {
   }
 };
 
-//Get current user
 const getCurrentMurandiUser = (req, res) => {
-  const { tenantSession, landlordSession, adminSession } = req.cookies;
+  const { firstName } = req.user;
+  const { role } = req;
 
-  let token, role;
-
-  if (tenantSession) {
-    token = tenantSession;
-    role = "tenant";
-  } else if (landlordSession) {
-    token = landlordSession;
-    role = "landlord";
-  } else if (adminSession) {
-    token = adminSession;
-    role = "admin";
-  } else {
-    return res.status(401).json({ message: "Not logged in" });
-  }
-
-  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-    if (err) return res.status(403).json({ message: "Invalid token" });
-
-    res.json({
-      firstName: decoded.firstName,
-      role: role,
-    });
+  res.json({
+    firstName,
+    role,
   });
 };
+
 
 //Fetch All Landlords
 const getLandlords = async (req, res) => {

@@ -272,7 +272,7 @@ function Maintenance() {
                   {req.status === "Pending" && (
                     <button
                       onClick={() => markRequestCompleted(req.request_id)}
-                      className="mt-3 bg-green-600 text-white px-3 sm:px-4 py-1 sm:py-2 rounded-full hover:bg-green-700 text-xs sm:text-sm"
+                      className="mt-3 bg-green-600 text-white px-3 sm:px-4 py-1 sm:py-2 rounded-full hover:bg-green-700 text-xs sm:text-sm cursor-pointer"
                     >
                       Mark as Completed
                     </button>

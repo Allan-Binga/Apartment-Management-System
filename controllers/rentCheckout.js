@@ -9,7 +9,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 const createRentCheckoutSession = async (req, res) => {
   const tenantId = req.tenantId;
-  console.log(tenantId);
+  // console.log(tenantId);
 
   try {
     //Find Tenant Apartment's Number

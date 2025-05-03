@@ -17,7 +17,11 @@ const updateInformation = async (req, res) => {
       return res.status(404).json({ message: "Tenant not found." });
     }
 
-    // Build dynamic update query
+    const currentTenant = checkResult.rows[0];
+    const currentLeaseEndDate = new Date(currentTenant.leaseenddate); // assumes column is lowercase in DB
+
+    console.log("Current lease end date:", currentLeaseEndDate.toISOString());
+
     const fields = [];
     const values = [];
     let counter = 1;
@@ -43,14 +47,22 @@ const updateInformation = async (req, res) => {
     }
 
     if (leaseEndDate) {
-      if (isUserLandlord) {
-        fields.push(`leaseEndDate = $${counter++}`);
-        values.push(leaseEndDate);
-      } else {
+      if (!isUserLandlord) {
         return res.status(403).json({
           message: "Only landlords can update this field!",
         });
       }
+
+      const newLeaseDate = new Date(leaseEndDate);
+      if (newLeaseDate < currentLeaseEndDate) {
+        return res.status(400).json({
+          message:
+            "New lease end date cannot be earlier than the current lease end date.",
+        });
+      }
+
+      fields.push(`leaseEndDate = $${counter++}`);
+      values.push(leaseEndDate);
     }
 
     if (apartmentnumber) {

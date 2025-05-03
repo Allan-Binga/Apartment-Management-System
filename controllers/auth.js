@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const { sendVerificationEmail } = require("./emailService.js");
 const { textAnnotation } = require("pdfkit");
+const { createNotification } = require("./notifications.js");
 
 //Tenant Registration
 const registerTenant = async (req, res) => {
@@ -149,6 +150,8 @@ const registerTenant = async (req, res) => {
       false, // isVerified
     ]);
 
+    const tenantId = newTenant.rows[0].id;
+
     // Update apartment leasingstatus to Leased
     const updateApartmentQuery =
       "UPDATE apartment_listings SET leasingstatus = 'Leased' WHERE apartmentnumber = $1";
@@ -156,6 +159,12 @@ const registerTenant = async (req, res) => {
 
     // Send email with plainToken
     await sendVerificationEmail(email, plainToken);
+
+    //Send notification
+    await createNotification(
+      tenantId,
+      "Please check your email for an account verification email. If not look at the spam."
+    );
 
     // Commit the transaction
     await client.query("COMMIT");
@@ -219,8 +228,8 @@ const loginTenant = async (req, res) => {
       tenant: {
         id: tenant.rows[0].id,
         firstName: tenant.rows[0].firstname,
-        email: tenant.rows[0].email
-      }
+        email: tenant.rows[0].email,
+      },
     });
   } catch (error) {
     console.error("Login Error:", error);
@@ -313,8 +322,8 @@ const registerLandlord = async (req, res) => {
 const loginLandlord = async (req, res) => {
   const { email, password } = req.body;
 
-  if(req.cookies && req.cookies.landlordSession) {
-    return res.status(400).json({message: "You are already logged in."})
+  if (req.cookies && req.cookies.landlordSession) {
+    return res.status(400).json({ message: "You are already logged in." });
   }
   try {
     //Check if landlord exists

@@ -75,19 +75,20 @@ function TenantLogin() {
     >
       <ToastContainer
         position="top-right"
-        autoClose={4000}
+        autoClose={3500}
         hideProgressBar={false}
         newestOnTop={false}
-        closeOnClick={true}
+        closeOnClick
         rtl={false}
         pauseOnFocusLoss
         draggable
         pauseOnHover
         theme="light"
-        toastClassName="rounded-lg bg-white shadow-md border-l-4 border-blue-500 p-4 text-sm text-gray-800"
+        toastClassName="toast-ease-in rounded-lg bg-white shadow-md border-l-4 p-4 text-sm text-gray-800"
         bodyClassName="flex items-center"
         progressClassName="bg-blue-400 h-1 rounded"
       />
+
       {/* Blur overlay */}
       <div className="absolute inset-0 backdrop-blur-sm bg-black/30 z-0"></div>
 

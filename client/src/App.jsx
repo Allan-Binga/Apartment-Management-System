@@ -11,7 +11,7 @@ import Verify from "./pages/accountVerification/Verify";
 import Payments from "./pages/Payments/Payments";
 import Maintenance from "./pages/Maintenance/Maintenance";
 import Profile from "./pages/Profile/Profile";
-import Contact from "./pages/Contact/Contact";
+import Messages from "./pages/Messages/Messages";
 import About from "./pages/About/About";
 import Notifications from "./pages/Notifications/Notifications";
 import LandlordHome from "./pages/Landlord/Home";
@@ -45,7 +45,7 @@ function App() {
         <Route path="/maintenance-requests" element={<Maintenance />} />
         <Route path="/payments" element={<Payments />} />
         <Route path="/profile" element={<Profile />} />
-        <Route path="/contact" element={<Contact />} />
+        <Route path="/messages" element={<Messages />} />
         <Route path="/about" element={<About />} />
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/home/landlord" element={<LandlordHome />} />

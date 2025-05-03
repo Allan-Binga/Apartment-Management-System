@@ -7,7 +7,7 @@ import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import LinkLogo from "../../assets/link.png"
 import StripeLogo from "../../assets/stripe.png";
-import Spinner from "../../components/Spinner";
+import StripeLoader from "../../components/StripeLoader";
 
 function Payments() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -167,7 +167,7 @@ function Payments() {
                       <tr>
                         <td colSpan="3" className="px-4 py-2 text-center">
                           <div className="scale-50">
-                            <Spinner />
+                            <StripeLoader />
                           </div>
                         </td>
                       </tr>
@@ -201,7 +201,7 @@ function Payments() {
                 <div className="sm:hidden space-y-4">
                   {loading ? (
                     <div className="text-center">
-                      <Spinner className="scale-50" />
+                      <StripeLoader className="scale-50" />
                     </div>
                   ) : payments.length > 0 ? (
                     payments.map((payment, index) => (
@@ -264,7 +264,7 @@ function Payments() {
                 <span className="flex-1 text-left text-sm sm:text-base">
                   Pay with Stripe
                 </span>
-                {loadingCheckout && <Spinner />}
+                {loadingCheckout && <StripeLoader/>}
               </button>
               <button
                 onClick={handleCheckout}
