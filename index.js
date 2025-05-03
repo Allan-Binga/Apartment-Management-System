@@ -30,6 +30,7 @@ app.use(express.json());
 const allowedOrigins = [
   "http://localhost:5173",
   "https://murandi-apartments-d3ba7e492c04.herokuapp.com",
+  "https://master.dw58fbfwlqgb9.amplifyapp.com"
 ];
 
 const corsOptions = {
