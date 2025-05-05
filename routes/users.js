@@ -5,13 +5,15 @@ const {
   getAdmins,
   getCurrentMurandiUser,
   getSingleTenant,
+  getAllMurandiUsers,
 } = require("../controllers/users");
 const { getTechnicians } = require("../controllers/technician");
-const {authAnyUser} = require("../middleware/user")
+const { authAnyUser } = require("../middleware/user");
 
 const router = express.Router();
 
 //Routes
+router.get("/all-users", getAllMurandiUsers)
 router.get("/me", authAnyUser, getCurrentMurandiUser);
 router.get("/tenants/:id", getSingleTenant);
 router.get("/tenants", getTenants);

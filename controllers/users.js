@@ -110,7 +110,6 @@ const getCurrentMurandiUser = (req, res) => {
   });
 };
 
-
 //Fetch All Landlords
 const getLandlords = async (req, res) => {
   try {
@@ -131,10 +130,31 @@ const getAdmins = async (req, res) => {
   }
 };
 
+// Fetch Tenants, Landlords, and Admins concurrently
+const getAllMurandiUsers = async (req, res) => {
+  try {
+    const [tenants, landlords, admins] = await Promise.all([
+      client.query("SELECT * FROM tenants"),
+      client.query("SELECT * FROM landlords"),
+      client.query("SELECT * FROM admins"),
+    ]);
+
+    res.status(200).json({
+      tenants: tenants.rows,
+      landlords: landlords.rows,
+      admins: admins.rows,
+    });
+  } catch (error) {
+    console.error("Error fetching all users:", error);
+    res.status(500).json({ message: "Could not fetch all Murandi users." });
+  }
+};
+
 module.exports = {
   getTenants,
   getLandlords,
   getAdmins,
   getCurrentMurandiUser,
   getSingleTenant,
+  getAllMurandiUsers,
 };

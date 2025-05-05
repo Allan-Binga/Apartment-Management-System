@@ -151,11 +151,6 @@ function LandlordLogin() {
           >
             {loading ? "Logging in..." : "Login"}
           </button>
-
-          {/* Forgot Password */}
-          <div className="text-right text-sm text-blue-500 hover:underline">
-            <Link to="/forgot-password">Forgot password?</Link>
-          </div>
         </form>
 
         {/* Redirect to Register */}

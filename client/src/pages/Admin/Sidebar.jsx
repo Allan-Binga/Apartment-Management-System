@@ -12,7 +12,7 @@ import {
   ShieldCheck,
   Building,
   X,
-  Menu,
+  Menu,Receipt
 } from "lucide-react";
 
 function AdminSidebar({ sidebarOpen, setSidebarOpen }) {
@@ -72,7 +72,7 @@ function AdminSidebar({ sidebarOpen, setSidebarOpen }) {
         `}
       >
         <div>
-          <ToastContainer
+          {/* <ToastContainer
             position="top-right"
             autoClose={3500}
             hideProgressBar={false}
@@ -81,7 +81,7 @@ function AdminSidebar({ sidebarOpen, setSidebarOpen }) {
             toastClassName="rounded-lg bg-white shadow-md border-l-4 border-blue-500 p-4 text-sm text-gray-800"
             bodyClassName="flex items-center"
             progressClassName="bg-blue-400 h-1 rounded"
-          />
+          /> */}
 
           {/* Logo */}
           <div className="mb-6 flex justify-center">
@@ -115,7 +115,7 @@ function AdminSidebar({ sidebarOpen, setSidebarOpen }) {
                 ),
               },
               {
-                href: "/admin/tenants",
+                href: "/admin/users",
                 label: "Users",
                 icon: (
                   <Users2
@@ -134,6 +134,19 @@ function AdminSidebar({ sidebarOpen, setSidebarOpen }) {
                   <Building
                     className={`w-6 h-6 ${
                       location.pathname === "/admin/properties"
+                        ? "text-blue-500"
+                        : ""
+                    }`}
+                  />
+                ),
+              },
+              {
+                href: "/admin/payments",
+                label: "All Payments",
+                icon: (
+                  <Receipt
+                    className={`w-6 h-6 ${
+                      location.pathname === "/admin/payments"
                         ? "text-blue-500"
                         : ""
                     }`}

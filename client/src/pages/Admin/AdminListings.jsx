@@ -117,6 +117,16 @@ function AdminListings() {
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
+      <ToastContainer
+        position="top-right"
+        autoClose={3500}
+        hideProgressBar={false}
+        closeOnClick
+        theme="dark"
+        toastClassName="rounded-lg bg-white shadow-md border-l-4 border-blue-500 p-4 text-sm text-gray-800"
+        bodyClassName="flex items-center"
+        progressClassName="bg-blue-400 h-1 rounded"
+      />
       <Navbar
         className="z-10"
         sidebarOpen={sidebarOpen}
