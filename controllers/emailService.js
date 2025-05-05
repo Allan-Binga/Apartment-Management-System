@@ -360,10 +360,125 @@ const sendRentPaymentEmail = async (
   }
 };
 
+// Password Reset Email
+const sendPasswordResetEmail = async (email, token) => {
+  const resetUrl = `${process.env.CLIENT_URL2}/password/reset?token=${token}`;
+
+  const mailOptions = {
+    from: `"Murandi Apartments" <${process.env.MAIL_USER}>`,
+    to: email,
+    subject: "Password Reset Request",
+    html: `
+      <div style="font-family: Arial, sans-serif; text-align: center; padding: 20px; background-color: #f4f4f4;">
+        <div style="max-width: 600px; margin: auto; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+          <h2 style="color: #333;">Password Reset Request</h2>
+          <p style="color: #555;">Click the button below to reset your password.</p>
+          <a href="${resetUrl}" 
+            style="display: inline-block; padding: 10px 20px; margin-top: 15px; background-color: #ff9800; color: #fff; text-decoration: none; border-radius: 5px;">
+            Reset Password
+          </a>
+          <p style="margin-top: 20px; color: #777;">If you did not request this, ignore this email.</p>
+        </div>
+      </div>`,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(`Password reset email sent to ${email}`);
+  } catch (error) {
+    console.error(`Error sending password reset email:`, error);
+    throw error;
+  }
+};
+
+//Resend password reset email
+const resendPasswordResetEmail = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ message: "Email is required." });
+    }
+
+    // Check if tenant exists
+    const result = await client.query(
+      "SELECT * FROM tenants WHERE email = $1",
+      [email]
+    );
+    const user = result.rows[0];
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    // Generate and store a new token and expiry
+    const plainToken = crypto.randomBytes(32).toString("hex");
+    const hashedToken = crypto
+      .createHash("sha256")
+      .update(plainToken)
+      .digest("hex");
+    const expiry = new Date(Date.now() + 2 * 60 * 1000); // 2 minutes from now
+
+    await client.query(
+      `UPDATE tenants 
+       SET passwordresettoken = $1, passwordresettokenexpiry = $2 
+       WHERE email = $3`,
+      [hashedToken, expiry, email]
+    );
+
+    await sendPasswordResetEmail(email, plainToken);
+
+    res.json({ message: "New password reset email sent." });
+  } catch (error) {
+    console.error("Error resending password reset email:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+};
+
+//Verify the password reset token
+const verifyPasswordResetToken = async (req, res) => {
+  try {
+    const { token } = req.query;
+
+    if (!token) {
+      return res.status(400).json({ message: "Token is required." });
+    }
+
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+    const result = await client.query(
+      `SELECT email, passwordresettokenexpiry 
+       FROM tenants 
+       WHERE passwordresettoken = $1`,
+      [hashedToken]
+    );
+
+    const user = result.rows[0];
+
+    if (!user) {
+      return res.status(400).json({ message: "Invalid or expired token." });
+    }
+
+    if (new Date(user.passwordresettokenexpiry) < new Date()) {
+      return res.status(400).json({
+        message: "Password reset token expired. Please request a new one.",
+      });
+    }
+
+    res.status(200).json({ message: "Token is valid.", email: user.email });
+  } catch (error) {
+    console.error("Error verifying password reset token:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+};
+
 module.exports = {
   sendVerificationEmail,
   verifyVerificationToken,
   resendVerificationEmail,
   sendMaintenanceRequestEmail,
   sendRentPaymentEmail,
+  sendPasswordResetEmail,
+  verifyPasswordResetToken,
+  resendPasswordResetEmail,
 };

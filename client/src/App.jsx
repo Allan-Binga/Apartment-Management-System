@@ -1,4 +1,9 @@
-import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Navigate,
+} from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import Home from "./pages/Tenant/Home";
 import TenantRegister from "./pages/Tenant/Register";
@@ -25,6 +30,8 @@ import Tenants from "./pages/Landlord/Tenants";
 import LandingPage from "./pages/Landing/Landing";
 import AdminDashboard from "./pages/Admin/Dashboard";
 import AdminListings from "./pages/Admin/AdminListings";
+import PasswordReset from "./pages/PasswordReset/PasswordReset";
+import PasswordChange from "./pages/PasswordReset/PasswordChange";
 
 function App() {
   return (
@@ -33,8 +40,8 @@ function App() {
       <Routes>
         {/* Redirect from the root path to /login/tenant */}
         <Route path="/" element={<Navigate to="/landing" />} />
-        <Route path="/home" element={<Home/>}/>
-        <Route path="/landing" element={<LandingPage/>}/>
+        <Route path="/home" element={<Home />} />
+        <Route path="/landing" element={<LandingPage />} />
         <Route path="/signup/tenant" element={<TenantRegister />} />
         <Route path="/login/tenant" element={<TenantLogin />} />
         <Route path="/signup/landlord" element={<LandlordRegister />} />
@@ -50,14 +57,16 @@ function App() {
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/home/landlord" element={<LandlordHome />} />
         <Route path="/listings" element={<Listings />} />
-        <Route path="/admin/listings" element={<AdminListings/>} />
+        <Route path="/admin/listings" element={<AdminListings />} />
         <Route path="/payment/success" element={<SuccessPage />} />
         <Route path="/payment/cancelled" element={<CancelPage />} />
         <Route path="/landlord/payments" element={<LandlordPayments />} />
-        <Route path="/landlord/reports" element={<Reports/>} />
-        <Route path="/landlord/dashboard" element={<Dashboard/>}/>
-        <Route path="/tenants" element={<Tenants/>}/>
-        <Route path="/admin/dashboard" element={<AdminDashboard/>}/>
+        <Route path="/landlord/reports" element={<Reports />} />
+        <Route path="/landlord/dashboard" element={<Dashboard />} />
+        <Route path="/tenants" element={<Tenants />} />
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        <Route path="/forgot-password" element={<PasswordReset />} />
+        <Route path="/password/reset" element={<PasswordChange />} />
       </Routes>
     </Router>
   );

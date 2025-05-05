@@ -162,6 +162,12 @@ function TenantLogin() {
         </form>
 
         <div className="flex flex-col items-center mt-5 sm:mt-6 gap-2 text-sm sm:text-base text-gray-600">
+        <p>
+           Forgot your password?{" "}
+            <Link to="/forgot-password" className="text-blue-500">
+              Click here
+            </Link>
+          </p>
           <p>
             Don’t have an account?{" "}
             <Link to="/signup/tenant" className="text-blue-500">
