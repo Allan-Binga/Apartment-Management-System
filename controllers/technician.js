@@ -10,6 +10,7 @@ const getTechnicians = async (req, res) => {
   }
 };
 
+//Assign a Technician
 const assignTechnician = async (req, res) => {
   try {
     const requestId = req.params.requestId;

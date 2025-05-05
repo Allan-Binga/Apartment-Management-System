@@ -12,7 +12,9 @@ import {
   ShieldCheck,
   Building,
   X,
-  Menu,Receipt
+  Menu,
+  Receipt,
+  Hammer,
 } from "lucide-react";
 
 function AdminSidebar({ sidebarOpen, setSidebarOpen }) {
@@ -147,6 +149,19 @@ function AdminSidebar({ sidebarOpen, setSidebarOpen }) {
                   <Receipt
                     className={`w-6 h-6 ${
                       location.pathname === "/admin/payments"
+                        ? "text-blue-500"
+                        : ""
+                    }`}
+                  />
+                ),
+              },
+              {
+                href: "/admin/technicians",
+                label: "Technicians",
+                icon: (
+                  <Hammer
+                    className={`w-6 h-6 ${
+                      location.pathname === "/admin/technicians"
                         ? "text-blue-500"
                         : ""
                     }`}

@@ -3,7 +3,6 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const { sendVerificationEmail } = require("./emailService.js");
-const { textAnnotation } = require("pdfkit");
 const { createNotification } = require("./notifications.js");
 
 //Tenant Registration
@@ -80,6 +79,17 @@ const registerTenant = async (req, res) => {
       return res
         .status(409)
         .json("You already registered. Please login to proceed.");
+    }
+
+    // Check if tenant already exists by phone number
+    const checkPhoneQuery = "SELECT * FROM tenants WHERE phoneNumber = $1";
+    const existingPhone = await client.query(checkPhoneQuery, [phoneNumber]);
+
+    if (existingPhone.rows.length > 0) {
+      return res.status(409).json({
+        message:
+          "This phone number is already registered. Please use a different number.",
+      });
     }
 
     //Check if apartment exists in listing
@@ -164,6 +174,12 @@ const registerTenant = async (req, res) => {
     await createNotification(
       tenantId,
       "Please check your email for an account verification email. If not look at the spam."
+    );
+
+    //Send Rent notification
+    await createNotification(
+      tenantId,
+      "Your rent for the current month is due. Please pay to avoid disconnection of services."
     );
 
     // Commit the transaction
@@ -257,20 +273,20 @@ const logoutTenant = async (req, res) => {
 const registerLandlord = async (req, res) => {
   const { firstName, lastName, email, phoneNumber, password } = req.body;
 
-  //Check if all fields are intact
+  // Check if all fields are intact
   if (!firstName || !lastName || !email || !phoneNumber || !password) {
     return res.status(400).json({
       message: "All fields are required.",
     });
   }
 
-  //validate email format
+  // Validate email format
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
     return res.status(400).json({ message: "Invalid email format." });
   }
 
-  //Password Strength
+  // Password strength
   const passwordRegex =
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
   if (!passwordRegex.test(password)) {
@@ -279,8 +295,9 @@ const registerLandlord = async (req, res) => {
         "Password must be at least 8 characters long, include one uppercase letter, one lowercase letter, one number, and one special character.",
     });
   }
+
   try {
-    //Check if landlord exists
+    // Check if landlord already exists by email
     const checkLandlordQuery = "SELECT * FROM landlords WHERE email = $1";
     const existingLandlord = await client.query(checkLandlordQuery, [email]);
 
@@ -290,17 +307,27 @@ const registerLandlord = async (req, res) => {
         .json("You already registered. Please login to proceed.");
     }
 
+    // Check if landlord already exists by phone number
+    const checkPhoneQuery = "SELECT * FROM landlords WHERE phoneNumber = $1";
+    const existingPhone = await client.query(checkPhoneQuery, [phoneNumber]);
+
+    if (existingPhone.rows.length > 0) {
+      return res.status(409).json({
+        message:
+          "This phone number is already registered. Please use a different number.",
+      });
+    }
+
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    //Insert into database
+    // Insert into database
     const insertLandlordQuery = `
       INSERT INTO landlords (firstName, lastName, email, phoneNumber, password)
       VALUES ($1, $2, $3, $4, $5)
       RETURNING id, firstName, lastName, email, phoneNumber
     `;
 
-    //Save to PostgreSQL
     const newLandlord = await client.query(insertLandlordQuery, [
       firstName,
       lastName,
@@ -311,6 +338,7 @@ const registerLandlord = async (req, res) => {
 
     res.status(201).json({
       message: "Landlord registered successfully.",
+      landlord: newLandlord.rows[0],
     });
   } catch (error) {
     console.error("Registration Error:", error);
@@ -490,6 +518,9 @@ const loginAdmin = async (req, res) => {
     //Return success
     res.status(200).json({
       message: "Login successful",
+      admin: {
+        id: admin.rows[0].id,
+      },
     });
   } catch (error) {
     console.error("Login Error:", error);
