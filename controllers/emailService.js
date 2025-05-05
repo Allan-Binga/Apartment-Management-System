@@ -362,7 +362,7 @@ const sendRentPaymentEmail = async (
 
 // Password Reset Email
 const sendPasswordResetEmail = async (email, token) => {
-  const resetUrl = `${process.env.CLIENT_URL2}/password/reset?token=${token}`;
+  const resetUrl = `${process.env.CLIENT_URL}/password/reset?token=${token}`;
 
   const mailOptions = {
     from: `"Murandi Apartments" <${process.env.MAIL_USER}>`,
