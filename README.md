@@ -1,4 +1,4 @@
-# 🏢 Apartment Manager Pro
+# 🏢 AModern Apartment Management System
 
 A modern web-based apartment management system for landlords and tenants. With payment handling via Stripe. Deployed on Heroku and AWS Amplify.
 
