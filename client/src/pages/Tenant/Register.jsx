@@ -218,7 +218,7 @@ function TenantRegister() {
                 Lease Start Date
               </label>
               <span className="block text-xs text-gray-500 mt-1">
-               Not prior to today
+               Not prior to today.
               </span>
               <input
                 type="date"
@@ -235,7 +235,7 @@ function TenantRegister() {
                 Lease End Date
               </label>
               <span className="block text-xs text-gray-500 mt-1">
-                Must be at least 1 month after the lease start date
+                Must be at least 2 months after the lease start date.
               </span>
               <input
                 type="date"

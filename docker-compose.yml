@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+    ports:
+      - "5800:5700"
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: npm start
+
+  frontend:
+    build:
+      context: ./client
+    ports:
+      - "5174:5173"
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    working_dir: /app
+    command: npm run dev
+
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_HOST}
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:  
