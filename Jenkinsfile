@@ -2,7 +2,7 @@
 pipeline {
     agent any
     tools {
-        nodejs 'NodeJS 23'  // Use the Node.js version configured in Jenkins
+        nodejs 'NodeJS 23'  //Node.js
     }
     stages {
         stage('Clone Repository') {
@@ -13,25 +13,9 @@ pipeline {
         }
         stage('Install Dependencies') {
             steps {
-                dir('backend') {
                     sh 'npm install'
-                }
             }
         }
-        //  stage('Install Dependencies') {
-        //     steps {
-        //         dir('backend') {
-        //             sh 'npm install'
-        //         }
-        //     }
-        // }
-        // stage('Run unit tests') {
-        //     steps {
-        //         dir('backend') {
-        //             sh 'npm test'
-        //         }
-        //     }
-        // }
     }
     post {
         success {
@@ -43,7 +27,7 @@ pipeline {
         }
         failure {
             slackSend(
-                channel: "#murandi-apartments",
+                channel: '#murandi-apartments',
                 color: 'danger',
                 message: 'Successfully installed dependencies.'
             )

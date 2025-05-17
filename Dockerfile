@@ -1,26 +1,30 @@
-#Base image
+# Base image
 FROM node:22-alpine AS builder
 
-#Working direcotry
+# Working directory
 WORKDIR /app
 
-#Copy package.json
-COPY package*json ./
+# Copy package.json and package-lock.json
+COPY package*.json ./
 
-#Install dependencies
-RUN npm install --production
+# Install dependencies
+RUN npm ci --production  
 
-#Copy all files
+# Copy source code
 COPY . .
 
-#Multi stage build
+# Multi-stage build
 FROM node:22-alpine
 
 WORKDIR /app
 
-# Copy only the node_modules from the build stage
+# Copy only necessary files from builder
 COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app ./
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app .
 
-#Expose port
+# Expose port (optional, for documentation)
+EXPOSE 5700
+
+# Start command
 CMD ["npm", "start"]

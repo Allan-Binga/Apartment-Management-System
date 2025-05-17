@@ -1,39 +1,47 @@
-version: '3.8'
+version: "3.8"
 
 services:
   backend:
     build:
       context: .
+      dockerfile: Dockerfile # Explicitly specify the Dockerfile
     ports:
-      - "5800:5700"
+      - "5700:5700"
     env_file:
       - .env
-    volumes:
-      - .:/app
+    # Remove volume mount to prevent overriding the image's filesystem
+    # volumes:
+    #   - .:/app
     working_dir: /app
     command: npm start
+    # depends_on:
+    #   - db
 
   frontend:
     build:
       context: ./client
+      dockerfile: Dockerfile
     ports:
-      - "5174:5173"
-    volumes:
-      - ./client:/app
-      - /app/node_modules
-    working_dir: /app
+      - "5173:5173"
+    # Remove volume mounts to use the image's built filesystem
+    # volumes:
+    #   - ./client:/app
+    #   - /app/node_modules
+    working_dir: /app/client # Align with Dockerfile's WORKDIR
     command: npm run dev
+    depends_on:
+      - backend
 
-  db:
-    image: postgres:15
-    environment:
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_HOST}
-    ports:
-      - "5433:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
+  # db:
+  #   image: postgres:15
+  #   environment:
+  #     POSTGRES_USER: ${DB_USER}
+  #     POSTGRES_PASSWORD: ${DB_PASSWORD}
+  #     POSTGRES_DB: ${DB_DATABASE}
+  #   ports:
+  #     - "5433:5432"
+  #   volumes:
+  #     - pgdata:/var/lib/postgresql/data
 
-volumes:
-  pgdata:  
+# volumes:
+#   pgdata:

@@ -24,7 +24,6 @@ function SideBar() {
   const navigate = useNavigate();
 
   // Handle Logout
-  // Handle Logout
   const handleLogout = async () => {
     try {
       const response = await axios.post(

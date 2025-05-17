@@ -1,26 +1,31 @@
-# Use an official Node.js runtime as the base image
+# Base image
 FROM node:22-alpine AS builder
 
-# Set the working directory in the container
+# Working directory
 WORKDIR /app/client
 
-# Copy package.json and package-lock.json to the working directory
+# Copy package.json and package-lock.json
 COPY package*.json ./
 
 # Install dependencies
-RUN npm install --production
+RUN npm ci --production  # Use npm ci for reproducible builds
 
-# Copy the rest of the application code to the working directory
+# Copy source code
 COPY . .
 
-#Multi stage build
+# Multi-stage build
 FROM node:22-alpine
 
 WORKDIR /app/client
 
-# Copy only the node_modules from the build stage
+# Copy only necessary files from builder
 COPY --from=builder /app/client/node_modules ./node_modules
-COPY --from=builder /app/client ./
+COPY --from=builder /app/client/package*.json ./
+COPY --from=builder /app/client/src ./src  
+COPY --from=builder /app/client/public ./public  
 
-# Default command to run the development server
+# Expose port (optional, for documentation)
+EXPOSE 5173
+
+# Start command
 CMD ["npm", "run", "dev"]
