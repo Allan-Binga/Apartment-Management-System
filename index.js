@@ -1,37 +1,26 @@
+// server.js
 const express = require("express");
 const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const path = require("path");
-const authRoute = require("./routes/auth");
-const usersRoute = require("./routes/users");
-const listingsRoute = require("./routes/listings");
-const paymentRoute = require("./routes/payments");
-const maintenanceRequestRoute = require("./routes/maintenanceRequest");
-const checkoutRoute = require("./routes/rentCheckout");
-const webhookRoute = require("./routes/webhook");
-const emailRoute = require("./routes/emailService");
-const tenantRoute = require("./routes/tenants");
-const reportRoute = require("./routes/reports");
-const receiptsRoute = require("./routes/receipts");
-const notificationRoute = require("./routes/notifications")
-const passwordRoute = require("./routes/password")
 
-require("./config/db");
-
+// Load environment variables
 dotenv.config();
 const app = express();
 
-//Webhook Route
-app.use("/murandi/v1/webhook", webhookRoute);
+// Webhook Route (placed at the top for priority)
+app.use("/murandi/v1/webhook", require("./routes/webhook"));
 
+// Middleware setup
 app.use(express.json());
+app.use(cookieParser());
 
-// CORS setup: handle local and production environments
+// CORS setup
 const allowedOrigins = [
   "http://localhost:5173",
   "https://murandi-apartments-d3ba7e492c04.herokuapp.com",
-  "https://master.dw58fbfwlqgb9.amplifyapp.com"
+  "https://master.dw58fbfwlqgb9.amplifyapp.com",
 ];
 
 const corsOptions = {
@@ -44,32 +33,28 @@ const corsOptions = {
   },
   credentials: true,
 };
-
 app.use(cors(corsOptions));
 
-//Cookie Parser
-app.use(cookieParser());
+// Load routes
+app.use("/murandi/v1/auth", require("./routes/auth"));
+app.use("/murandi/v1/verify", require("./routes/emailService"));
+app.use("/murandi/v1/users", require("./routes/users"));
+app.use("/murandi/v1/tenants", require("./routes/tenants"));
+app.use("/murandi/v1/listings", require("./routes/listings"));
+app.use("/murandi/v1/payments", require("./routes/payments"));
+app.use("/murandi/v1/maintenance", require("./routes/maintenanceRequest"));
+app.use("/murandi/v1/checkout", require("./routes/rentCheckout"));
+app.use("/murandi/v1/reports", require("./routes/reports"));
+app.use("/murandi/v1/receipts", require("./routes/receipts"));
+app.use("/murandi/v1/notifications", require("./routes/notifications"));
+app.use("/murandi/v1/password", require("./routes/password"));
 
-// Routes
-app.use("/murandi/v1/auth", authRoute);
-app.use("/murandi/v1/verify", emailRoute);
-app.use("/murandi/v1/users", usersRoute);
-app.use("/murandi/v1/tenants", tenantRoute);
-app.use("/murandi/v1/listings", listingsRoute);
-app.use("/murandi/v1/payments", paymentRoute);
-app.use("/murandi/v1/maintenance", maintenanceRequestRoute);
-app.use("/murandi/v1/checkout", checkoutRoute);
-app.use("/murandi/v1/reports", reportRoute);
-app.use("/murandi/v1/receipts", receiptsRoute);
-app.use("/murandi/v1/notifications", notificationRoute)
-app.use("/murandi/v1/password", passwordRoute)
-
+// Serve static files in production
 if (process.env.NODE_ENV === "production") {
   const clientDistPath = path.join(__dirname, "client", "dist");
-
   app.use(express.static(clientDistPath));
 
-  // Fallback only for frontend routes.
+  // Fallback for frontend routes
   app.use((req, res, next) => {
     if (req.method === "GET" && !req.path.startsWith("/murandi")) {
       res.sendFile(path.join(clientDistPath, "index.html"));
@@ -79,8 +64,13 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
-const PORT = process.env.PORT || 5700;
+// Start the server only if not in test environment
+if (process.env.NODE_ENV !== "test") {
+  const PORT = process.env.PORT || 5700;
+  app.listen(PORT, () => {
+    console.log(`Server started on port ${PORT}`);
+  });
+}
 
-app.listen(PORT, () => {
-  console.log(`Server started on port ${PORT}`);
-});
+// Export app for testing
+module.exports = app;
