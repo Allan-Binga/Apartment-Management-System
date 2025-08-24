@@ -19,7 +19,7 @@ jobs:
       - name: Build and push backend image
         run: |
           docker build -t allanbinga/murandi-backend:v1.0.0 .
-          docker push allanbinga/murandi-backend:v.0.0
+          docker push allanbinga/murandi-backend:v1.0.0
 
       - name: Build and push frontend image
         run: |
