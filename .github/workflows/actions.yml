@@ -24,7 +24,8 @@ jobs:
       - name: Build and push frontend image
         run: |
           docker build \
-            --build-arg VITE_BACKEND_ENDPOINT=${{ secrets.VITE_BACKEND_ENDPOINT }} \
-            --build-arg VITE_APP_STRIPE_PUBLISHABLE_KEY=${{ secrets.VITE_APP_STRIPE_PUBLISHABLE_KEY }} \
-            -t allanbinga/murandi-frontend:v1.0.0 ./client
+           --build-arg VITE_BACKEND_ENDPOINT=${{ secrets.VITE_BACKEND_ENDPOINT }} \
+           --build-arg VITE_APP_STRIPE_PUBLISHABLE_KEY=${{ secrets.VITE_APP_STRIPE_PUBLISHABLE_KEY }} \
+           -t allanbinga/murandi-frontend:v1.0.0 \
+           ./client
           docker push allanbinga/murandi-frontend:v1.0.0
