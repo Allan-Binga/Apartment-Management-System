@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: murandi-backend
+  namespace: murandi-apartments
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: murandi-backend
+  template:
+    metadata:
+      labels:
+        app: murandi-backend
+    spec:
+      containers:
+        - name: backend
+          image: allanbinga/murandi-backend:v1.0.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5700
+          envFrom:
+            - secretRef:
+                name: murandi-secrets
+
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "250m"
+              memory: "256Mi"

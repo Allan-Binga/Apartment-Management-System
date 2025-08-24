@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: murandi-frontend
+  namespace: murandi-apartments
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: murandi-frontend
+  template:
+    metadata:
+      labels:
+        app: murandi-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: allanbinga/murandi-frontend:v1.0.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "250m"
+              memory: "512Mi"

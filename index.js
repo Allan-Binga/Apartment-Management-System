@@ -18,6 +18,7 @@ app.use(cookieParser());
 
 // CORS setup
 const allowedOrigins = [
+  "http://murandi-apartments.local",
   "http://localhost:5173",
   "http://localhost:5174",
   "https://murandi-apartments-d3ba7e492c04.herokuapp.com",

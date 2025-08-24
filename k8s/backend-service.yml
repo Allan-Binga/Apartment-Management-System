@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: murandi-backend
+  namespace: murandi-apartments
+spec:
+  selector:
+    app: murandi-backend
+  ports:
+    - protocol: TCP
+      port: 5700
+      targetPort: 5700
