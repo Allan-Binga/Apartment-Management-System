@@ -91,7 +91,7 @@ function Listings() {
         message: error.message,
         response: error.response?.data,
       });
-      toast.error(" RafaFailed to add listing.");
+      toast.error(" Failed to add listing.");
     }
   };
 

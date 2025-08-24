@@ -2,30 +2,25 @@
 FROM node:22-alpine AS builder
 
 # Working directory
-WORKDIR /app/client
+WORKDIR /app
 
 # Copy package.json and package-lock.json
 COPY package*.json ./
 
 # Install dependencies
-RUN npm ci --production  # Use npm ci for reproducible builds
+RUN npm ci
 
 # Copy source code
 COPY . .
 
-# Multi-stage build
-FROM node:22-alpine
+RUN npm run build
 
-WORKDIR /app/client
+# Step 2: Serve with NGINX
+FROM nginx:alpine
 
-# Copy only necessary files from builder
-COPY --from=builder /app/client/node_modules ./node_modules
-COPY --from=builder /app/client/package*.json ./
-COPY --from=builder /app/client/src ./src  
-COPY --from=builder /app/client/public ./public  
+COPY --from=builder /app/dist /usr/share/nginx/html
+COPY ./nginx.conf /etc/nginx/conf.d/default.conf
 
-# Expose port (optional, for documentation)
-EXPOSE 5173
+EXPOSE 80
 
-# Start command
-CMD ["npm", "run", "dev"]
+CMD ["nginx", "-g", "daemon off;"]

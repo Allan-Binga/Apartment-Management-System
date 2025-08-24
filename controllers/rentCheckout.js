@@ -44,7 +44,7 @@ const createRentCheckoutSession = async (req, res) => {
       SELECT * FROM payment
       WHERE tenantid = $1
         AND paymentdate > $2
-        AND paymentstatus = 'pending' -- Only check payments that are pending or already made
+        AND paymentstatus = 'pending' 
     `;
     const paymentCheckResult = await client.query(paymentCheckQuery, [
       tenantId,

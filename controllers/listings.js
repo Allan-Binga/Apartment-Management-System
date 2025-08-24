@@ -47,15 +47,15 @@ const createListing = async (req, res) => {
       req.body;
 
     // Log the incoming request body
-    console.log("Received createListing request:", {
-      title,
-      description,
-      price,
-      square_feet,
-      image,
-      apartmentnumber,
-      body: req.body, // Log the entire body for completeness
-    });
+    // console.log("Received createListing request:", {
+    //   title,
+    //   description,
+    //   price,
+    //   square_feet,
+    //   image,
+    //   apartmentnumber,
+    //   body: req.body, // Log the entire body for completeness
+    // });
 
     // Validate input
     if (

@@ -1,9 +1,10 @@
 const Stripe = require("stripe");
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const client = require("../config/db");
 const { createPaymentReport } = require("../controllers/reports");
 const { sendRentPaymentEmail } = require("../controllers/emailService");
-const {createNotification} = require("../controllers/notifications")
+const { createNotification } = require("../controllers/notifications");
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 const handleWebhook = async (req, res) => {
   const endpointSecret = process.env.STRIPE_WEBHOOK;
@@ -34,7 +35,9 @@ const handleWebhook = async (req, res) => {
 
         // Fetch tenant ID using apartmentnumber
         const tenantIdQuery = `SELECT id FROM tenants WHERE apartmentnumber = $1`;
-        const tenantIdResult = await client.query(tenantIdQuery, [apartmentNumber]);
+        const tenantIdResult = await client.query(tenantIdQuery, [
+          apartmentNumber,
+        ]);
 
         if (tenantIdResult.rows.length === 0) {
           throw new Error("Tenant not found for the given apartment number");
@@ -73,7 +76,10 @@ const handleWebhook = async (req, res) => {
           paymentDate,
         });
 
-        await createNotification(tenantId, "Your rent payment was successful. Please check your email for a receipt.")
+        await createNotification(
+          tenantId,
+          "Your rent payment was successful. Please check your email for a receipt."
+        );
 
         // Prepare payment report data
         const paymentReportData = {
