@@ -27,5 +27,5 @@ jobs:
             --build-arg VITE_BACKEND_ENDPOINT=http://murandi-apartments.local/murandi/v1 \
             --build-arg VITE_APP_STRIPE_PUBLISHABLE_KEY=pk_test_51QdrihBCCp07HlmuoHw2wFbIXh53izyTmyQlypfFkp7104wuyeLgSOxuN1klA7jeKdshf5TvkVmJPRWhpYQP1grB00HmapinMr \
             -t allanbinga/murandi-frontend:v1.0.0 ./client
-          docker push allanbinga/murandi-frontend:v1.0.0
+          docker push allanbinga/murandi-frontend:v.0.0
 

@@ -3,7 +3,6 @@ const express = require("express");
 const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
-const path = require("path");
 
 // Load environment variables
 dotenv.config();
@@ -50,21 +49,6 @@ app.use("/murandi/v1/reports", require("./routes/reports"));
 app.use("/murandi/v1/receipts", require("./routes/receipts"));
 app.use("/murandi/v1/notifications", require("./routes/notifications"));
 app.use("/murandi/v1/password", require("./routes/password"));
-
-// Serve static files in production
-if (process.env.NODE_ENV === "production") {
-  const clientDistPath = path.join(__dirname, "client", "dist");
-  app.use(express.static(clientDistPath));
-
-  // Fallback for frontend routes
-  app.use((req, res, next) => {
-    if (req.method === "GET" && !req.path.startsWith("/murandi")) {
-      res.sendFile(path.join(clientDistPath, "index.html"));
-    } else {
-      next();
-    }
-  });
-}
 
 // Start the server only if not in test environment
 if (process.env.NODE_ENV !== "test") {
