@@ -3,8 +3,6 @@ kind: Ingress
 metadata:
   name: murandi-ingress
   namespace: murandi-apartments
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
     - host: murandi-apartments.local
